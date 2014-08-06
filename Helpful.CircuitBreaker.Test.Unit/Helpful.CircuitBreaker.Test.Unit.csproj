@@ -30,6 +30,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Helpful.BDD">
+      <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.BDD.0.1.0.0\lib\net45\Helpful.BDD.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\Helpful.CircuitBreaker\packages\Moq.4.2.1408.0511\lib\net40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\Helpful.CircuitBreaker\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,6 +49,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="when_requesting_a_breaker\when_setting_a_timeout.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Helpful.CircuitBreaker\Helpful.CircuitBreaker.csproj">
+      <Project>{daf827ac-6053-4cf0-af4f-59769b032d83}</Project>
+      <Name>Helpful.CircuitBreaker</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
