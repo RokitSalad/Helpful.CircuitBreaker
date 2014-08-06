@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Helpful.CircuitBreaker.Events;
 
 namespace Helpful.CircuitBreaker
 {
@@ -23,7 +24,7 @@ namespace Helpful.CircuitBreaker
         public CircuitBreaker GetBreaker()
         {
             CircuitBreaker breaker = new CircuitBreaker(_eventFactory.GetClosedEvent(), _eventFactory.GetOpenedEvent(),
-                _eventFactory.GetTriedToCloseEvent());
+                _eventFactory.GetTriedToCloseEvent(), _eventFactory.GetTolleratedOpenEvent(), new CircuitBreakerConfig());
             _breakers.Add(breaker);
             _registerBreakerEvent.RaiseEvent(breaker);
             return breaker;
