@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpful.CircuitBreaker", "Helpful.CircuitBreaker.csproj", "{DAF827AC-6053-4CF0-AF4F-59769B032D83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpful.CircuitBreaker.Test.Unit", "..\Helpful.CircuitBreaker.Test.Unit\Helpful.CircuitBreaker.Test.Unit.csproj", "{830CA73C-7F41-4E96-817C-E6D2FE8D443A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAF827AC-6053-4CF0-AF4F-59769B032D83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAF827AC-6053-4CF0-AF4F-59769B032D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAF827AC-6053-4CF0-AF4F-59769B032D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAF827AC-6053-4CF0-AF4F-59769B032D83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{830CA73C-7F41-4E96-817C-E6D2FE8D443A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830CA73C-7F41-4E96-817C-E6D2FE8D443A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830CA73C-7F41-4E96-817C-E6D2FE8D443A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830CA73C-7F41-4E96-817C-E6D2FE8D443A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
