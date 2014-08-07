@@ -99,6 +99,7 @@ namespace Helpful.CircuitBreaker
                 OpenBreaker(BreakerOpenReason.Exception, e);
                 throw new CircuitBreakerExecutionErrorException(_config, e);
             }
+            throw e;
         }
 
         private void ProcessWhiteList(Exception e)
@@ -109,6 +110,7 @@ namespace Helpful.CircuitBreaker
                 OpenBreaker(BreakerOpenReason.Exception, e);
                 throw new CircuitBreakerExecutionErrorException(_config, e);
             }
+            throw e;
         }
 
         private void OpenBreaker(BreakerOpenReason reason, Exception thrownException = null)
