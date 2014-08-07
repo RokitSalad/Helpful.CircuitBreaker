@@ -6,20 +6,20 @@ using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker
 {
-    class when_receiving_an_exception_not_in_the_blacklist : using_a_mocked_event_factory
+    class when_receiving_an_exception_in_the_whitelist : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private Exception _caughtException;
-        private NullReferenceException _thrownException;
+        private ArgumentNullException _thrownException;
 
         protected override void Given()
         {
             base.Given();
-            _config = new CircuitBreakerConfig { ExpectedExceptionListType = ExceptionListType.BlackList };
+            _config = new CircuitBreakerConfig { ExpectedExceptionListType = ExceptionListType.WhiteList };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
             _circuitBreaker = Factory.GetBreaker(_config);
-            _thrownException = new NullReferenceException();
+            _thrownException = new ArgumentNullException();
         }
 
         protected override void When()
