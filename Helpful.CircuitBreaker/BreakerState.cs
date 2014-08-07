@@ -3,6 +3,7 @@
     public enum BreakerState
     {
         Open,
-        Closed
+        Closed,
+        HalfOpen
     }
 }

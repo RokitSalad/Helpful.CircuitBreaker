@@ -1,31 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Helpful.BDD;
 using Helpful.CircuitBreaker.Exceptions;
 using NUnit.Framework;
 
 namespace Helpful.CircuitBreaker.Test.Unit.when_executing_code_via_the_breaker
 {
-    class when_limiting_by_timeout : using_a_mocked_event_factory
+    class when_receiving_an_unhandled_exception : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
-        private TimeSpan _timeout;
         private CircuitBreaker _circuitBreaker;
         private Exception _caughtException;
+        private ArgumentNullException _thrownException;
 
         protected override void Given()
         {
             base.Given();
-            _timeout = TimeSpan.FromMilliseconds(100);
-            _config = new CircuitBreakerConfig
-                {
-                    UseTimeout = true,
-                    Timeout = _timeout
-                };
+            _thrownException = new ArgumentNullException();
+            _config = new CircuitBreakerConfig();
             _circuitBreaker = Factory.GetBreaker(_config);
         }
 
@@ -33,7 +24,7 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_executing_code_via_the_breaker
         {
             try
             {
-                _circuitBreaker.Execute(() => new Task(() => Thread.Sleep(1000)));
+                _circuitBreaker.Execute(() => { throw _thrownException; });
             }
             catch (Exception e)
             {
@@ -54,9 +45,21 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_executing_code_via_the_breaker
         }
 
         [Then]
-        public void the_exception_should_be_specifically_a_timeout_exception()
+        public void the_exception_should_be_specifically_a_execution_error_exception()
         {
-            Assert.That(_caughtException, Is.AssignableTo<CircuitBreakerTimedOutException>());
+            Assert.That(_caughtException, Is.AssignableTo<CircuitBreakerExecutionErrorException>());
+        }
+
+        [Then]
+        public void the_inner_exception_should_be_the_thrown_exception()
+        {
+            Assert.That(_caughtException.InnerException, Is.EqualTo(_thrownException));
+        }
+
+        [Then]
+        public void the_breaker_should_open()
+        {
+            Assert.That(_circuitBreaker.State, Is.EqualTo(BreakerState.Open));
         }
     }
 }

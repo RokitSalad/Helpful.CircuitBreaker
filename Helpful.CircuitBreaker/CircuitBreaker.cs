@@ -8,13 +8,14 @@ namespace Helpful.CircuitBreaker
 {
     public class CircuitBreaker
     {
-        private BreakerState _state;
         private short _tolleratedOpenEventCount;
         private readonly IClosedEvent _closedEvent;
         private readonly IOpenedEvent _openedEvent;
         private readonly ITriedToCloseEvent _triedToCloseEvent;
         private readonly ITolleratedOpenEvent _tolleratedOptEvent;
         private readonly CircuitBreakerConfig _config;
+
+        public BreakerState State { get; private set; }
 
         public CircuitBreakerConfig Config
         {
@@ -39,6 +40,17 @@ namespace Helpful.CircuitBreaker
             {
                 ApplyTimeout(action);
             }
+            else
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    HandleException(e);
+                }
+            }
         }
 
         private void ApplyTimeout(Action action)
@@ -58,19 +70,24 @@ namespace Helpful.CircuitBreaker
             }
             catch (Exception e)
             {
-                if (_config.UseExceptionWhiteList)
-                {
-                    ProcessWhiteList(e);
-                }
-                else if (_config.UseExceptionBlackList)
-                {
-                    ProcessBlackList(e);
-                }
-                else
-                {
-                    OpenBreaker(BreakerOpenReason.Exception, e);
-                    throw new CircuitBreakerExecutionErrorException(_config, e);
-                }
+                HandleException(e);
+            }
+        }
+
+        private void HandleException(Exception e)
+        {
+            if (_config.UseExceptionWhiteList)
+            {
+                ProcessWhiteList(e);
+            }
+            else if (_config.UseExceptionBlackList)
+            {
+                ProcessBlackList(e);
+            }
+            else
+            {
+                OpenBreaker(BreakerOpenReason.Exception, e);
+                throw new CircuitBreakerExecutionErrorException(_config, e);
             }
         }
 
@@ -104,11 +121,12 @@ namespace Helpful.CircuitBreaker
             {
                 _tolleratedOptEvent.RaiseEvent(_tolleratedOpenEventCount++, _config, reason, thrownException);
             }
+            State = BreakerState.Open;
         }
 
         private void CloseBreaker()
         {
-            _state = BreakerState.Closed;
+            State = BreakerState.Closed;
             _closedEvent.RaiseEvent(_config);
         }
     }
