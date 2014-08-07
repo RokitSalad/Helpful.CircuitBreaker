@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Events;
@@ -11,7 +7,7 @@ using NUnit.Framework;
 
 namespace when_requesting_a_breaker
 {
-    class when_setting_a_timeout : TestBase
+    class when_setting_configuration : TestBase
     {
         private Mock<IEventFactory> _eventFactory;
         private CircuitBreakerFactory _factory;
