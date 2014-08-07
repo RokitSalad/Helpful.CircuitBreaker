@@ -76,11 +76,11 @@ namespace Helpful.CircuitBreaker
 
         private void HandleException(Exception e)
         {
-            if (_config.UseExceptionWhiteList)
+            if (_config.ExpectedExceptionListType == ExceptionListType.WhiteList)
             {
                 ProcessWhiteList(e);
             }
-            else if (_config.UseExceptionBlackList)
+            else if (_config.ExpectedExceptionListType == ExceptionListType.BlackList)
             {
                 ProcessBlackList(e);
             }
@@ -93,7 +93,7 @@ namespace Helpful.CircuitBreaker
 
         private void ProcessBlackList(Exception e)
         {
-            bool isBlack = _config.ExceptionBlackList.Any(exType => e.GetType() == exType);
+            bool isBlack = _config.ExpectedExceptionList.Any(exType => e.GetType() == exType);
             if (isBlack)
             {
                 OpenBreaker(BreakerOpenReason.Exception, e);
@@ -103,7 +103,7 @@ namespace Helpful.CircuitBreaker
 
         private void ProcessWhiteList(Exception e)
         {
-            bool isWhite = _config.ExceptionWhiteList.Any(exType => e.GetType() == exType);
+            bool isWhite = _config.ExpectedExceptionList.Any(exType => e.GetType() == exType);
             if (!isWhite)
             {
                 OpenBreaker(BreakerOpenReason.Exception, e);

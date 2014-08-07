@@ -52,6 +52,7 @@
     <Compile Include="Events\ITolleratedOpenEvent.cs" />
     <Compile Include="Events\ITriedToCloseEvent.cs" />
     <Compile Include="Events\IUnregisterBreakerEvent.cs" />
+    <Compile Include="ExceptionListType.cs" />
     <Compile Include="Exceptions\CircuitBreakerException.cs" />
     <Compile Include="Exceptions\CircuitBreakerExecutionErrorException.cs" />
     <Compile Include="Exceptions\CircuitBreakerTimedOutException.cs" />

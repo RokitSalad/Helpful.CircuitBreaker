@@ -17,9 +17,8 @@ namespace when_executing_code_via_the_breaker
         protected override void Given()
         {
             base.Given();
-            _config = new CircuitBreakerConfig();
-            _config.ExceptionBlackList.Add(typeof(ArgumentNullException));
-            _config.UseExceptionBlackList = true;
+            _config = new CircuitBreakerConfig {ExpectedExceptionListType = ExceptionListType.BlackList};
+            _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
             _circuitBreaker = Factory.GetBreaker(_config);
             _thrownException = new ArgumentNullException();
         }
