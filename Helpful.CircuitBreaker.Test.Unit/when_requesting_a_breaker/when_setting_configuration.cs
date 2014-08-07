@@ -1,40 +1,24 @@
-﻿using System;
-using Helpful.BDD;
+﻿using Helpful.BDD;
 using Helpful.CircuitBreaker;
-using Helpful.CircuitBreaker.Events;
-using Moq;
+using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
 namespace when_requesting_a_breaker
 {
-    class when_setting_configuration : TestBase
+    class when_setting_configuration : using_a_mocked_event_factory
     {
-        private Mock<IEventFactory> _eventFactory;
-        private CircuitBreakerFactory _factory;
         private CircuitBreaker _circuitBreaker;
-        private TimeSpan _timeout;
         private CircuitBreakerConfig _config;
 
         protected override void Given()
         {
-            _eventFactory = new Mock<IEventFactory>();
-            _eventFactory.Setup(ef => ef.GetClosedEvent()).Returns(new Mock<IClosedEvent>().Object);
-            _eventFactory.Setup(ef => ef.GetOpenedEvent()).Returns(new Mock<IOpenedEvent>().Object);
-            _eventFactory.Setup(ef => ef.GetRegisterBreakerEvent()).Returns(new Mock<IRegisterBreakerEvent>().Object);
-            _eventFactory.Setup(ef => ef.GetTolleratedOpenEvent()).Returns(new Mock<ITolleratedOpenEvent>().Object);
-            _eventFactory.Setup(ef => ef.GetTriedToCloseEvent()).Returns(new Mock<ITriedToCloseEvent>().Object);
-            _eventFactory.Setup(ef => ef.GetUnregisterBreakerEvent()).Returns(new Mock<IUnregisterBreakerEvent>().Object);
-            _factory = new CircuitBreakerFactory(_eventFactory.Object);
-            _timeout = TimeSpan.FromMilliseconds(1000);
-            _config = new CircuitBreakerConfig
-                {
-                    Timeout = _timeout
-                };
+            base.Given();
+            _config = new CircuitBreakerConfig();
         }
 
         protected override void When()
         {
-            _circuitBreaker = _factory.GetBreaker(_config);
+            _circuitBreaker = Factory.GetBreaker(_config);
         }
 
         [Then]
