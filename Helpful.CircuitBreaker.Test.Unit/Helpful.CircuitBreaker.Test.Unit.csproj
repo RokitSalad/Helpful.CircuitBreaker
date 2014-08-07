@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="using_a_mocked_event_factory.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_limiting_by_timeout.cs" />
     <Compile Include="when_requesting_a_breaker\when_setting_configuration.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,9 +63,7 @@
       <Name>Helpful.CircuitBreaker</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="when_executing_code_via_the_breaker\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
