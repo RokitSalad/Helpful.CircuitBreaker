@@ -13,6 +13,7 @@ namespace when_requesting_a_breaker
         private CircuitBreakerFactory _factory;
         private CircuitBreaker _circuitBreaker;
         private TimeSpan _timeout;
+        private CircuitBreakerConfig _config;
 
         protected override void Given()
         {
@@ -25,21 +26,21 @@ namespace when_requesting_a_breaker
             _eventFactory.Setup(ef => ef.GetUnregisterBreakerEvent()).Returns(new Mock<IUnregisterBreakerEvent>().Object);
             _factory = new CircuitBreakerFactory(_eventFactory.Object);
             _timeout = TimeSpan.FromMilliseconds(1000);
+            _config = new CircuitBreakerConfig
+                {
+                    Timeout = _timeout
+                };
         }
 
         protected override void When()
         {
-            CircuitBreakerConfig config = new CircuitBreakerConfig
-                {
-                    Timeout = _timeout
-                };
-            _circuitBreaker = _factory.GetBreaker(config);
+            _circuitBreaker = _factory.GetBreaker(_config);
         }
 
         [Then]
-        public void the_timeout_is_set()
+        public void config_is_injected_into_the_breaker()
         {
-            Assert.That(_circuitBreaker.Config.Timeout, Is.EqualTo(_timeout)); 
+            Assert.That(_circuitBreaker.Config, Is.EqualTo(_config)); 
         }
     }
 }
