@@ -54,6 +54,7 @@
     <Compile Include="when_executing_code_via_the_breaker\when_hitting_a_timeout.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_in_the_whitelist.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_not_in_the_blacklist.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_not_in_the_whitelist.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_unhandled_exception.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_a_blacklisted_exception.cs" />
     <Compile Include="when_requesting_a_breaker\when_setting_configuration.cs" />
