@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Helpful.CircuitBreaker.Test.Unit</RootNamespace>
     <AssemblyName>Helpful.CircuitBreaker.Test.Unit</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,10 +32,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Helpful.BDD">
-      <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.BDD.0.1.0.0\lib\net45\Helpful.BDD.dll</HintPath>
+      <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.BDD.0.1.1\lib\net40\Helpful.BDD.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
-      <HintPath>..\Helpful.CircuitBreaker\packages\Moq.4.2.1408.0511\lib\net40\Moq.dll</HintPath>
+      <HintPath>..\Helpful.CircuitBreaker\packages\Moq.4.2.1408.0619\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\Helpful.CircuitBreaker\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
