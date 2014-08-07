@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker
 {
-    class when_receiving_an_unhandled_exception : using_a_mocked_event_factory
+    class when_receiving_a_blacklisted_exception : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
@@ -17,9 +17,11 @@ namespace when_executing_code_via_the_breaker
         protected override void Given()
         {
             base.Given();
-            _thrownException = new ArgumentNullException();
             _config = new CircuitBreakerConfig();
+            _config.ExceptionBlackList.Add(typeof(ArgumentNullException));
+            _config.UseExceptionBlackList = true;
             _circuitBreaker = Factory.GetBreaker(_config);
+            _thrownException = new ArgumentNullException();
         }
 
         protected override void When()

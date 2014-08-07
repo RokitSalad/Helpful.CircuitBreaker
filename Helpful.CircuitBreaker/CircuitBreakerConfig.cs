@@ -13,5 +13,10 @@ namespace Helpful.CircuitBreaker
         public List<Type> ExceptionWhiteList { get; set; }
         public List<Type> ExceptionBlackList { get; set; }
         public short OpenEventTollerance { get; set; }
+
+        public CircuitBreakerConfig()
+        {
+            ExceptionBlackList = new List<Type>();
+        }
     }
 }
