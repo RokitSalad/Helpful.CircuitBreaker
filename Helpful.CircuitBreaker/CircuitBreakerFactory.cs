@@ -21,10 +21,10 @@ namespace Helpful.CircuitBreaker
             _breakers = new Collection<CircuitBreaker>();
         }
 
-        public CircuitBreaker GetBreaker()
+        public CircuitBreaker GetBreaker(CircuitBreakerConfig config)
         {
             CircuitBreaker breaker = new CircuitBreaker(_eventFactory.GetClosedEvent(), _eventFactory.GetOpenedEvent(),
-                _eventFactory.GetTriedToCloseEvent(), _eventFactory.GetTolleratedOpenEvent(), new CircuitBreakerConfig());
+                _eventFactory.GetTriedToCloseEvent(), _eventFactory.GetTolleratedOpenEvent(), config);
             _breakers.Add(breaker);
             _registerBreakerEvent.RaiseEvent(breaker);
             return breaker;

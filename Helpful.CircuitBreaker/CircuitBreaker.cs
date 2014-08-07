@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
@@ -17,6 +15,11 @@ namespace Helpful.CircuitBreaker
         private readonly ITriedToCloseEvent _triedToCloseEvent;
         private readonly ITolleratedOpenEvent _tolleratedOptEvent;
         private readonly CircuitBreakerConfig _config;
+
+        public CircuitBreakerConfig Config
+        {
+            get { return _config; }
+        }
 
         public CircuitBreaker(IClosedEvent closedEvent, IOpenedEvent openedEvent, ITriedToCloseEvent triedToCloseEvent,
             ITolleratedOpenEvent tolleratedOptEvent, CircuitBreakerConfig config)
