@@ -64,6 +64,10 @@ namespace Helpful.CircuitBreaker
                     throw new CircuitBreakerTimedOutException(_config);
                 }
             }
+            catch (AggregateException)
+            {
+                throw;
+            }
             catch (CircuitBreakerException)
             {
                 throw;
