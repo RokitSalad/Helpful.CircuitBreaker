@@ -52,9 +52,15 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_executing_code_via_the_breaker
         }
 
         [Then]
-        public void the_inner_exception_should_be_the_received_exception()
+        public void the_inner_exception_should_be_an_aggregate_exception()
         {
-            Assert.That(_caughtException.InnerException, Is.EqualTo(_thrownException));
+            Assert.That(_caughtException.InnerException, Is.TypeOf<AggregateException>());
+        }
+
+        [Then]
+        public void the_aggregate_exception_contains_the_thrown_exception()
+        {
+            Assert.That((_caughtException.InnerException as AggregateException).InnerExceptions, Contains.Item(_thrownException));
         }
     }
 }

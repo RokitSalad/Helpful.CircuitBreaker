@@ -58,15 +58,12 @@ namespace Helpful.CircuitBreaker
             try
             {
                 Task actionTask = new Task(action);
-                if (!actionTask.Wait(_config.Timeout))
+                actionTask.Start();
+                if (!Wait(actionTask))
                 {
                     OpenBreaker(BreakerOpenReason.Timeout);
                     throw new CircuitBreakerTimedOutException(_config);
                 }
-            }
-            catch (AggregateException)
-            {
-                throw;
             }
             catch (CircuitBreakerException)
             {
@@ -75,6 +72,19 @@ namespace Helpful.CircuitBreaker
             catch (Exception e)
             {
                 HandleException(e);
+            }
+        }
+
+        private bool Wait(Task actionTask)
+        {
+            try
+            {
+                return actionTask.Wait(_config.Timeout);
+            }
+            catch (AggregateException ae)
+            {
+                ae.Handle(x => false);
+                return false;
             }
         }
 

@@ -19,7 +19,7 @@ namespace when_executing_code_via_the_breaker
         protected override void Given()
         {
             base.Given();
-            _timeout = TimeSpan.FromMilliseconds(100);
+            _timeout = TimeSpan.FromMilliseconds(1000);
             _config = new CircuitBreakerConfig
                 {
                     UseTimeout = true,
@@ -32,7 +32,7 @@ namespace when_executing_code_via_the_breaker
         {
             try
             {
-                _circuitBreaker.Execute(() => new Task(() => Thread.Sleep(1000)));
+                _circuitBreaker.Execute(() => new Task(() => Thread.Sleep(10000)));
             }
             catch (Exception e)
             {
