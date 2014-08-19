@@ -32,7 +32,7 @@ namespace when_executing_code_via_the_breaker
         {
             try
             {
-                _circuitBreaker.Execute(() => new Task(() => Thread.Sleep(10000)));
+                _circuitBreaker.Execute(() => Thread.Sleep(10000));
             }
             catch (Exception e)
             {
