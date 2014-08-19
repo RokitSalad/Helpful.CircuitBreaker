@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Helpful.BDD;
+using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Exceptions;
+using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
-namespace Helpful.CircuitBreaker.Test.Unit.when_executing_code_via_the_breaker
+namespace when_executing_code_via_the_breaker
 {
     class when_receiving_an_exception_before_hitting_a_timeout : using_a_mocked_event_factory
     {
@@ -61,6 +60,12 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_executing_code_via_the_breaker
         public void the_aggregate_exception_contains_the_thrown_exception()
         {
             Assert.That((_caughtException.InnerException as AggregateException).InnerExceptions, Contains.Item(_thrownException));
+        }
+
+        [Then]
+        public void the_breaker_should_be_open()
+        {
+            Assert.That(_circuitBreaker.State, Is.EqualTo(BreakerState.Open));
         }
     }
 }
