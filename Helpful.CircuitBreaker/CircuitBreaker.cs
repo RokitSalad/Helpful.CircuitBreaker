@@ -8,12 +8,14 @@ namespace Helpful.CircuitBreaker
 {
     public class CircuitBreaker
     {
-        private short _tolleratedOpenEventCount;
         private readonly IClosedEvent _closedEvent;
         private readonly IOpenedEvent _openedEvent;
-        private readonly ITriedToCloseEvent _triedToCloseEvent;
-        private readonly ITolleratedOpenEvent _tolleratedOptEvent;
+        private readonly ITryingToCloseEvent _tryingToCloseEvent;
+        private readonly ITolleratedOpenEvent _tolleratedOpenEvent;
         private readonly CircuitBreakerConfig _config;
+
+        private short _tolleratedOpenEventCount;
+        private DateTime _timeOpened;
 
         public BreakerState State { get; private set; }
 
@@ -22,13 +24,13 @@ namespace Helpful.CircuitBreaker
             get { return _config; }
         }
 
-        public CircuitBreaker(IClosedEvent closedEvent, IOpenedEvent openedEvent, ITriedToCloseEvent triedToCloseEvent,
-            ITolleratedOpenEvent tolleratedOptEvent, CircuitBreakerConfig config)
+        public CircuitBreaker(IClosedEvent closedEvent, IOpenedEvent openedEvent, ITryingToCloseEvent tryingToCloseEvent,
+            ITolleratedOpenEvent tolleratedOpenEvent, CircuitBreakerConfig config)
         {
             _closedEvent = closedEvent;
             _openedEvent = openedEvent;
-            _triedToCloseEvent = triedToCloseEvent;
-            _tolleratedOptEvent = tolleratedOptEvent;
+            _tryingToCloseEvent = tryingToCloseEvent;
+            _tolleratedOpenEvent = tolleratedOpenEvent;
             _config = config;
             _tolleratedOpenEventCount = 0;
             CloseBreaker();
@@ -36,6 +38,7 @@ namespace Helpful.CircuitBreaker
 
         public void Execute(Action action)
         {
+            HandleClosedBreaker();
             if(_config.UseTimeout)
             {
                 ApplyTimeout(action);
@@ -50,6 +53,18 @@ namespace Helpful.CircuitBreaker
                 {
                     HandleException(e);
                 }
+            }
+        }
+
+        private void HandleClosedBreaker()
+        {
+            if (State == BreakerState.Open)
+            {
+                if (_timeOpened.Add(TimeSpan.FromSeconds(_config.RetryPeriodInSeconds)) > DateTime.Now)
+                {
+                    throw new CircuitBreakerOpenException(_config);
+                }
+                _tryingToCloseEvent.RaiseEvent(_config);
             }
         }
 
@@ -125,13 +140,15 @@ namespace Helpful.CircuitBreaker
         {
             if(_tolleratedOpenEventCount >= _config.OpenEventTollerance)
             {
+                State = BreakerState.Open;
+                _timeOpened = DateTime.Now;
                 _openedEvent.RaiseEvent(_config, reason, thrownException);
+                _tolleratedOpenEventCount = 0;
             }
             else
             {
-                _tolleratedOptEvent.RaiseEvent(_tolleratedOpenEventCount++, _config, reason, thrownException);
+                _tolleratedOpenEvent.RaiseEvent(_tolleratedOpenEventCount++, _config, reason, thrownException);
             }
-            State = BreakerState.Open;
         }
 
         private void CloseBreaker()

@@ -4,7 +4,7 @@
     {
         IClosedEvent GetClosedEvent();
         IOpenedEvent GetOpenedEvent();
-        ITriedToCloseEvent GetTriedToCloseEvent();
+        ITryingToCloseEvent GetTriedToCloseEvent();
         IUnregisterBreakerEvent GetUnregisterBreakerEvent();
         IRegisterBreakerEvent GetRegisterBreakerEvent();
         ITolleratedOpenEvent GetTolleratedOpenEvent();

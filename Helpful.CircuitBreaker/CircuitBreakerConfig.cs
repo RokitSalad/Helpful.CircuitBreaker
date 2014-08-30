@@ -11,6 +11,7 @@ namespace Helpful.CircuitBreaker
         public ExceptionListType ExpectedExceptionListType { get; set; }
         public List<Type> ExpectedExceptionList { get; set; }
         public short OpenEventTollerance { get; set; }
+        public int RetryPeriodInSeconds { get; set; }
 
         public CircuitBreakerConfig()
         {
