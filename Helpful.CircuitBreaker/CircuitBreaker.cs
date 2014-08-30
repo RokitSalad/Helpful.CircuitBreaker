@@ -138,7 +138,7 @@ namespace Helpful.CircuitBreaker
 
         private void OpenBreaker(BreakerOpenReason reason, Exception thrownException = null)
         {
-            if(_tolleratedOpenEventCount >= _config.OpenEventTollerance)
+            if(_tolleratedOpenEventCount >= _config.OpenEventTolerance)
             {
                 State = BreakerState.Open;
                 _timeOpened = DateTime.Now;
