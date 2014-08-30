@@ -66,6 +66,8 @@
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_before_hitting_timeouts_within_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_in_the_whitelist_within_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_blacklist_within_tolerance.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_beyond_tolerance.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_within_tolerance.cs" />
     <Compile Include="when_requesting_a_breaker\when_setting_configuration.cs" />
   </ItemGroup>
   <ItemGroup>
