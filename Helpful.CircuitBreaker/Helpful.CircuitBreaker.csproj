@@ -31,8 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Helpful.CircuitBreaker.Events">
-      <HintPath>packages\Helpful.CircuitBreaker.Events.1.0.1\lib\net40\Helpful.CircuitBreaker.Events.dll</HintPath>
+    <Reference Include="Helpful.CircuitBreaker.Events, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Helpful.CircuitBreaker.Events.1.0.2\lib\net40\Helpful.CircuitBreaker.Events.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

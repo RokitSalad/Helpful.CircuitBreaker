@@ -26,7 +26,7 @@ namespace Helpful.CircuitBreaker
             CircuitBreaker breaker = new CircuitBreaker(_eventFactory.GetClosedEvent(), _eventFactory.GetOpenedEvent(),
                 _eventFactory.GetTriedToCloseEvent(), _eventFactory.GetTolleratedOpenEvent(), config);
             _breakers.Add(breaker);
-            _registerBreakerEvent.RaiseEvent(breaker);
+            _registerBreakerEvent.RaiseEvent(breaker.Config);
             return breaker;
         }
 
@@ -42,7 +42,7 @@ namespace Helpful.CircuitBreaker
                 _disposed = true;
                 foreach (CircuitBreaker breaker in _breakers)
                 {
-                    _unregisterBreakerEvent.RaiseEvent(breaker);
+                    _unregisterBreakerEvent.RaiseEvent(breaker.Config);
                 }
                 _breakers.Clear();
             }

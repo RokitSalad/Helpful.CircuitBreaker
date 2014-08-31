@@ -34,8 +34,9 @@
     <Reference Include="Helpful.BDD">
       <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.BDD.0.1.1\lib\net40\Helpful.BDD.dll</HintPath>
     </Reference>
-    <Reference Include="Helpful.CircuitBreaker.Events">
-      <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.CircuitBreaker.Events.1.0.1\lib\net40\Helpful.CircuitBreaker.Events.dll</HintPath>
+    <Reference Include="Helpful.CircuitBreaker.Events, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.CircuitBreaker.Events.1.0.2\lib\net40\Helpful.CircuitBreaker.Events.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
       <HintPath>..\Helpful.CircuitBreaker\packages\Moq.4.2.1408.0619\lib\net40\Moq.dll</HintPath>
