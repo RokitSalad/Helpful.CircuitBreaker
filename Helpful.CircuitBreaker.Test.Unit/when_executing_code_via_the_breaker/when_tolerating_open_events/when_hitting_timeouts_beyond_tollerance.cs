@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
 using Helpful.CircuitBreaker.Test.Unit;
 using Moq;
