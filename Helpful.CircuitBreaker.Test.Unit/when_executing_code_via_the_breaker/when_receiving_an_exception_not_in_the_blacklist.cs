@@ -1,6 +1,7 @@
 ﻿using System;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Schedulers;
 using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
@@ -10,6 +11,7 @@ namespace when_executing_code_via_the_breaker
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
+        private IRetryScheduler _scheduler;
         private Exception _caughtException;
         private NullReferenceException _thrownException;
 
@@ -17,8 +19,9 @@ namespace when_executing_code_via_the_breaker
         {
             base.Given();
             _config = new CircuitBreakerConfig { ExpectedExceptionListType = ExceptionListType.BlackList };
+            _scheduler = new FixedRetryScheduler(10);
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = Factory.GetBreaker(_config);
+            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
             _thrownException = new NullReferenceException();
         }
 

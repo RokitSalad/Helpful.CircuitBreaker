@@ -1,5 +1,6 @@
 ﻿using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Schedulers;
 using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
@@ -9,16 +10,18 @@ namespace when_requesting_a_breaker
     {
         private CircuitBreaker _circuitBreaker;
         private CircuitBreakerConfig _config;
+        private IRetryScheduler _scheduler;
 
         protected override void Given()
         {
             base.Given();
             _config = new CircuitBreakerConfig();
+            _scheduler = new FixedRetryScheduler(10);
         }
 
         protected override void When()
         {
-            _circuitBreaker = Factory.GetBreaker(_config);
+            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
         }
 
         [Then]

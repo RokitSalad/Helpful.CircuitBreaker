@@ -55,6 +55,17 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="using_a_mocked_event_factory.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_not_ready_for_retry.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_ready_for_retry.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_an_unhandled_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_there_is_no_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_a_whitelisted_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_a_blacklisted_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_receiving_an_unhandled_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_hitting_a_timeout.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_receiving_a_blacklisted_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_receiving_a_whitelisted_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_there_is_no_exception.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_hitting_a_timeout.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_before_hitting_a_timeout.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_in_the_whitelist.cs" />
@@ -75,6 +86,16 @@
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_beyond_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_within_tolerance.cs" />
     <Compile Include="when_requesting_a_breaker\when_setting_configuration.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_begining_subsequent_periods.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_begining_the_first_period.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_the_allowed_retry_time_has_not_passed.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_the_allowed_retry_time_has_passed.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_the_allowed_retry_time_has_not_passed.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_the_allowed_retry_time_has_passed.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_beginning_the_sequence.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_resetting.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_seeding_next_period.cs" />
+    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_reaching_then_end_of_the_sequence.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

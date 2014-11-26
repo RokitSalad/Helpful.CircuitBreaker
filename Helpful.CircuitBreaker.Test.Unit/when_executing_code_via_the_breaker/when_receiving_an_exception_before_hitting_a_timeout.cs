@@ -2,6 +2,7 @@
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Exceptions;
+using Helpful.CircuitBreaker.Schedulers;
 using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
@@ -11,6 +12,7 @@ namespace when_executing_code_via_the_breaker
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
+        private IRetryScheduler _scheduler;
         private Exception _caughtException;
         private ArgumentNullException _thrownException;
 
@@ -23,7 +25,8 @@ namespace when_executing_code_via_the_breaker
                 Timeout = TimeSpan.FromMilliseconds(1000),
                 UseTimeout = true
             };
-            _circuitBreaker = Factory.GetBreaker(_config);
+            _scheduler = new FixedRetryScheduler(10);
+            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
         }
 
         protected override void When()

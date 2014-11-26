@@ -32,5 +32,10 @@ namespace Helpful.CircuitBreaker.Test.Unit
             EventFactory.Setup(ef => ef.GetUnregisterBreakerEvent()).Returns(UnregisterBreakerEvent.Object);
             Factory = new CircuitBreakerFactory(EventFactory.Object);
         }
+
+        protected void ForceBreakerState(CircuitBreaker breaker, BreakerState state)
+        {
+            typeof (CircuitBreaker).GetProperty("State").SetValue(breaker, state, null);
+        }
     }
 }
