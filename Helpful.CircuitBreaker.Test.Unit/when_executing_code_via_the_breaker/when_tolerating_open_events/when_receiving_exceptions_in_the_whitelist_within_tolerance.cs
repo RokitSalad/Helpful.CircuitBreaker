@@ -4,16 +4,18 @@ using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
+using Helpful.CircuitBreaker.Schedulers;
 using Helpful.CircuitBreaker.Test.Unit;
 using Moq;
 using NUnit.Framework;
 
-namespace when_executing_code_via_the_breaker.when_tolerating_open_events
+namespace when_executing_code_via_the_breaker.when_tollerating_open_events
 {
-    class when_receiving_exceptions_in_the_whitelist_within_tolerance : using_a_mocked_event_factory
+    class when_receiving_exceptions_in_the_whitelist_within_tollerance : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
+        private IRetryScheduler _scheduler;
         private List<Exception> _caughtExceptions;
         private ArgumentNullException _thrownException;
 
@@ -23,7 +25,8 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
             _caughtExceptions = new List<Exception>();
             _config = new CircuitBreakerConfig { ExpectedExceptionListType = ExceptionListType.WhiteList };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = Factory.GetBreaker(_config);
+            _scheduler = new FixedRetryScheduler(10);
+            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
             _thrownException = new ArgumentNullException();
         }
 

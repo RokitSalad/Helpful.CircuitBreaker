@@ -4,16 +4,18 @@ using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
+using Helpful.CircuitBreaker.Schedulers;
 using Helpful.CircuitBreaker.Test.Unit;
 using Moq;
 using NUnit.Framework;
 
-namespace when_executing_code_via_the_breaker.when_tolerating_open_events
+namespace when_executing_code_via_the_breaker.when_tollerating_open_events
 {
-    class when_receiving_exceptions_before_hitting_timeouts_beyond_tolerance : using_a_mocked_event_factory
+    class when_receiving_exceptions_before_hitting_timeouts_beyond_tollerance : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
+        private IRetryScheduler _scheduler;
         private List<Exception> _caughtExceptions;
         private ArgumentNullException _thrownException;
 
@@ -27,9 +29,9 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
                 Timeout = TimeSpan.FromMilliseconds(1000),
                 UseTimeout = true,
                 OpenEventTolerance = 2,
-                RetryPeriodInSeconds = 60
             };
-            _circuitBreaker = Factory.GetBreaker(_config);
+            _scheduler = new FixedRetryScheduler(10);
+            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
         }
 
         protected override void When()

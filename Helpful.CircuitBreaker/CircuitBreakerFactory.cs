@@ -21,10 +21,17 @@ namespace Helpful.CircuitBreaker
             _breakers = new Collection<CircuitBreaker>();
         }
 
-        public CircuitBreaker GetBreaker(CircuitBreakerConfig config)
+        public CircuitBreaker GetBreaker(CircuitBreakerConfig config, IRetryScheduler retryScheduler)
         {
-            CircuitBreaker breaker = new CircuitBreaker(_eventFactory.GetClosedEvent(), _eventFactory.GetOpenedEvent(),
-                _eventFactory.GetTriedToCloseEvent(), _eventFactory.GetTolleratedOpenEvent(), config);
+            CircuitBreaker breaker = 
+                new CircuitBreaker(
+                    _eventFactory.GetClosedEvent(), 
+                    _eventFactory.GetOpenedEvent(),
+                    _eventFactory.GetTriedToCloseEvent(), 
+                    _eventFactory.GetTolleratedOpenEvent(), 
+                    config,
+                    retryScheduler);
+
             _breakers.Add(breaker);
             _registerBreakerEvent.RaiseEvent(breaker.Config);
             return breaker;

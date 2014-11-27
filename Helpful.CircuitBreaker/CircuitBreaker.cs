@@ -8,15 +8,15 @@ namespace Helpful.CircuitBreaker
 {
     public class CircuitBreaker
     {
-        private readonly IClosedEvent _closedEvent;
-        private readonly IOpenedEvent _openedEvent;
-        private readonly ITryingToCloseEvent _tryingToCloseEvent;
-        private readonly ITolleratedOpenEvent _tolleratedOpenEvent;
-        private readonly CircuitBreakerConfig _config;
+        readonly IClosedEvent _closedEvent;
+        readonly IOpenedEvent _openedEvent;
+        readonly ITryingToCloseEvent _tryingToCloseEvent;
+        readonly ITolleratedOpenEvent _tolleratedOpenEvent;
+        readonly CircuitBreakerConfig _config;
+        readonly IRetryScheduler _retryScheduler;
 
-        private short _tolleratedOpenEventCount;
-        private DateTime _timeOpened;
-
+        short _tolleratedOpenEventCount;
+        
         public BreakerState State { get; private set; }
 
         public CircuitBreakerConfig Config
@@ -24,22 +24,29 @@ namespace Helpful.CircuitBreaker
             get { return _config; }
         }
 
-        public CircuitBreaker(IClosedEvent closedEvent, IOpenedEvent openedEvent, ITryingToCloseEvent tryingToCloseEvent,
-            ITolleratedOpenEvent tolleratedOpenEvent, CircuitBreakerConfig config)
+        public CircuitBreaker(
+            IClosedEvent closedEvent, 
+            IOpenedEvent openedEvent, 
+            ITryingToCloseEvent tryingToCloseEvent,
+            ITolleratedOpenEvent tolleratedOpenEvent, 
+            CircuitBreakerConfig config,
+            IRetryScheduler retryScheduler)
         {
             _closedEvent = closedEvent;
             _openedEvent = openedEvent;
             _tryingToCloseEvent = tryingToCloseEvent;
             _tolleratedOpenEvent = tolleratedOpenEvent;
             _config = config;
+            _retryScheduler = retryScheduler;
             _tolleratedOpenEventCount = 0;
+
             CloseBreaker();
         }
 
         public void Execute(Action action)
         {
-            HandleClosedBreaker();
-            if(_config.UseTimeout)
+            HandleOpenBreaker();
+            if (_config.UseTimeout)
             {
                 ApplyTimeout(action);
             }
@@ -48,6 +55,7 @@ namespace Helpful.CircuitBreaker
                 try
                 {
                     action();
+                    CloseBreaker();
                 }
                 catch (Exception e)
                 {
@@ -56,15 +64,15 @@ namespace Helpful.CircuitBreaker
             }
         }
 
-        private void HandleClosedBreaker()
+        private void HandleOpenBreaker()
         {
             if (State == BreakerState.Open)
             {
-                if (_timeOpened.Add(TimeSpan.FromSeconds(_config.RetryPeriodInSeconds)) > DateTime.Now)
+                if (!_retryScheduler.AllowRetry)
                 {
                     throw new CircuitBreakerOpenException(_config);
                 }
-                _tryingToCloseEvent.RaiseEvent(_config);
+                TryToCloseBreaker();
             }
         }
 
@@ -116,7 +124,9 @@ namespace Helpful.CircuitBreaker
 
         private void ProcessBlackList(Exception e)
         {
-            bool isBlack = _config.ExpectedExceptionList.Any(exType => e.GetType() == exType);
+            var ae = e as AggregateException;
+            var isBlack = ae == null ? IsListedType(e) : ae.Flatten().InnerExceptions.Any(IsListedType);
+            
             if (isBlack)
             {
                 OpenBreaker(BreakerOpenReason.Exception, e);
@@ -127,34 +137,60 @@ namespace Helpful.CircuitBreaker
 
         private void ProcessWhiteList(Exception e)
         {
-            bool isWhite = _config.ExpectedExceptionList.Any(exType => e.GetType() == exType);
+            var ae = e as AggregateException;
+            var isWhite = ae == null ? IsListedType(e) : ae.Flatten().InnerExceptions.All(IsListedType); 
+            
             if (!isWhite)
             {
                 OpenBreaker(BreakerOpenReason.Exception, e);
                 throw new CircuitBreakerExecutionErrorException(_config, e);
             }
+            if (State == BreakerState.HalfOpen)
+                CloseBreaker();
+
             throw e;
+        }
+
+        private bool IsListedType(Exception e)
+        {
+            return _config.ExpectedExceptionList.Contains(e.GetType());
         }
 
         private void OpenBreaker(BreakerOpenReason reason, Exception thrownException = null)
         {
-            if(_tolleratedOpenEventCount >= _config.OpenEventTolerance)
+            if (State != BreakerState.Open)
             {
-                State = BreakerState.Open;
-                _timeOpened = DateTime.Now;
-                _openedEvent.RaiseEvent(_config, reason, thrownException);
-                _tolleratedOpenEventCount = 0;
-            }
-            else
-            {
-                _tolleratedOpenEvent.RaiseEvent(_tolleratedOpenEventCount++, _config, reason, thrownException);
+                if (State == BreakerState.HalfOpen || _tolleratedOpenEventCount >= _config.OpenEventTolerance)
+                {
+                    State = BreakerState.Open;
+                    _retryScheduler.BeginNextPeriod(DateTime.UtcNow);
+                    _openedEvent.RaiseEvent(_config, reason, thrownException);
+                    _tolleratedOpenEventCount = 0;
+                }
+                else
+                {
+                    _tolleratedOpenEvent.RaiseEvent(_tolleratedOpenEventCount++, _config, reason, thrownException);
+                }
             }
         }
 
         private void CloseBreaker()
         {
-            State = BreakerState.Closed;
-            _closedEvent.RaiseEvent(_config);
+            if (State != BreakerState.Closed)
+            {
+                _retryScheduler.Reset();
+                State = BreakerState.Closed;
+                _closedEvent.RaiseEvent(_config);
+            }
+        }
+
+        private void TryToCloseBreaker()
+        {
+            if (State != BreakerState.HalfOpen)
+            {
+                State = BreakerState.HalfOpen;
+                _tryingToCloseEvent.RaiseEvent(_config);
+            }
         }
     }
 }
