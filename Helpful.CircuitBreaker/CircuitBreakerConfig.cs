@@ -11,7 +11,7 @@ namespace Helpful.CircuitBreaker
         public TimeSpan Timeout { get; set; }
         public bool UseTimeout { get; set; }
         public ExceptionListType ExpectedExceptionListType { get; set; }
-        public IList<Type> ExpectedExceptionList { get; set; }
+        public List<Type> ExpectedExceptionList { get; set; }
         public short OpenEventTolerance { get; set; }
 
         public CircuitBreakerConfig()
