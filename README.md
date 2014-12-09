@@ -44,10 +44,10 @@ var circuitBreakerConfig = new CircuitBreakerConfig
 	// (Optional) The timeout timespan 
 	Timeout = TimeSpan.FromSeconds(10),
 };
-//Register Circuit Breaker with id "CircuitBreaker-Test"  Also returns the circuit breaker if required
-circuitBreakerFactory.RegisterBreaker(circuitBreakerConfig);
+//Register circuit breaker with id "CircuitBreaker-Test"  Also returns the circuit breaker if required
+CircuitBreaker cb = circuitBreakerFactory.RegisterBreaker(circuitBreakerConfig);
 
-//Get Circuit Breaker with id "CircuitBreaker-Test"
+//Get circuit breaker with id "CircuitBreaker-Test"
 CircuitBreaker cb = circuitBreakerFactory.GetBreaker("CircuitBreaker-Test");
 
 //Execute Actions within the breaker
