@@ -1,4 +1,10 @@
 # Helpful.CircuitBreaker #
+
+[Nuget](https://www.nuget.org/packages/Helpful.CircuitBreaker/)
+```powershell
+Install-Package Helpful.CircuitBreaker
+```
+
 ## Quick Start ##
 ```c#
 CircuitBreakerFactory circuitBreakerFactory = new CircuitBreakerFactory(new MyEventFactory());
