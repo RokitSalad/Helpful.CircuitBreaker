@@ -8,7 +8,8 @@ Or use one of the prebuilt ones available here:
  - [Azure Queue Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureQueue)
  - [Azure WAD Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureWad)
  - [Eventstore Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.EventStore)
- ```
+
+```
 var circuitBreakerConfig = new CircuitBreakerConfig
 {
 	//The Breaker ID
