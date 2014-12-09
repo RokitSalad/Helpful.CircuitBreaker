@@ -3,7 +3,7 @@
 ```c#
 CircuitBreakerFactory circuitBreakerFactory = new CircuitBreakerFactory(new MyEventFactory());
 ```
-Creates a new instance of the circuit breaker factory wiht your own implementation of the event factory.
+Creates a new instance of the circuit breaker factory with your own implementation of the event factory.
 Or use one of the prebuilt ones available here:
  - [Azure Queue Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureQueue)
  - [Azure WAD Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureWad)
@@ -22,7 +22,7 @@ var circuitBreakerConfig = new CircuitBreakerConfig
 		RetryPeriodInSeconds = 10
 	},
 	//or Sequential Retry
-	SchedulerConfig = new SequentialRetrySchedulerConfig()
+	SchedulerConfig = new SequentialRetrySchedulerConfig
 	{
 		RetrySequenceSeconds = new[] { 10, 20, 30 }
 	},
@@ -35,7 +35,7 @@ var circuitBreakerConfig = new CircuitBreakerConfig
 	// (Optional) The Exception List 
 	ExpectedExceptionList = new List<Type> { typeof(HttpException) },
 
-	//(Optional) Defaut to 0 The number of times an error can occur before the circuit breaker is opened
+	//(Optional Defaults to 0) The number of times an error can occur before the circuit breaker is opened
 	OpenEventTolerance = 3,
 
 	// (Optional) Timeout operations in the circuit breaker and open the circuit
@@ -44,7 +44,6 @@ var circuitBreakerConfig = new CircuitBreakerConfig
 	// (Optional) The timeout timespan 
 	Timeout = TimeSpan.FromSeconds(10),
 };
-
 //Register Circuit Breaker with id "CircuitBreaker-Test"  Also returns the circuit breaker if required
 circuitBreakerFactory.RegisterBreaker(circuitBreakerConfig);
 
