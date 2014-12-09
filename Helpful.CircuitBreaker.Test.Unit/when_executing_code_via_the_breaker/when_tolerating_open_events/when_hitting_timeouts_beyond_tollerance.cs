@@ -1,38 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using Helpful.BDD;
-using Helpful.CircuitBreaker;
-using Helpful.CircuitBreaker.Events;
-using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Schedulers;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
-using NUnit.Framework;
-
-namespace when_executing_code_via_the_breaker.when_tollerating_open_events
+﻿
+namespace when_executing_code_via_the_breaker.when_tolerating_open_events
 {
-    class when_hitting_timeouts_beyond_tollerance : using_a_mocked_event_factory
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using Helpful.BDD;
+    using Helpful.CircuitBreaker;
+    using Helpful.CircuitBreaker.Config;
+    using Helpful.CircuitBreaker.Events;
+    using Helpful.CircuitBreaker.Exceptions;
+    using Helpful.CircuitBreaker.Test.Unit;
+    using Moq;
+    using NUnit.Framework;
+
+    class when_hitting_timeouts_beyond_tolerance : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
-        private TimeSpan _timeout;
         private CircuitBreaker _circuitBreaker;
-        private IRetryScheduler _scheduler;
         private List<Exception> _caughtExceptions;
 
         protected override void Given()
         {
             base.Given();
             _caughtExceptions = new List<Exception>();
-            _timeout = TimeSpan.FromMilliseconds(100);
             _config = new CircuitBreakerConfig
             {
                 UseTimeout = true,
-                Timeout = _timeout,
+                Timeout = TimeSpan.FromMilliseconds(0),
                 OpenEventTolerance = 2,
+                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
             };
-            _scheduler = new FixedRetryScheduler(10);
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
+         
+            _circuitBreaker = Factory.RegisterBreaker(_config);
         }
 
         protected override void When()
@@ -88,9 +87,9 @@ namespace when_executing_code_via_the_breaker.when_tollerating_open_events
         }
 
         [Then]
-        public void two_tollerated_open_events_should_be_raised()
+        public void two_Tolerated_open_events_should_be_raised()
         {
-            TolleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, BreakerOpenReason.Timeout, It.IsAny<Exception>()), Times.Exactly(2));
+            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, BreakerOpenReason.Timeout, It.IsAny<Exception>()), Times.Exactly(2));
         }
     }
 }

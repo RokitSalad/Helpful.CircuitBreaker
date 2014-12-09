@@ -1,27 +1,29 @@
-﻿using System;
-using Helpful.BDD;
-using Helpful.CircuitBreaker;
-using Helpful.CircuitBreaker.Schedulers;
-using Helpful.CircuitBreaker.Test.Unit;
-using NUnit.Framework;
-
-namespace when_executing_code_via_the_breaker
+﻿namespace when_executing_code_via_the_breaker
 {
+    using System;
+    using Helpful.BDD;
+    using Helpful.CircuitBreaker;
+    using Helpful.CircuitBreaker.Config;
+    using Helpful.CircuitBreaker.Test.Unit;
+    using NUnit.Framework;
+
     class when_receiving_an_exception_not_in_the_blacklist : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
-        private IRetryScheduler _scheduler;
         private Exception _caughtException;
         private NullReferenceException _thrownException;
 
         protected override void Given()
         {
             base.Given();
-            _config = new CircuitBreakerConfig { ExpectedExceptionListType = ExceptionListType.BlackList };
-            _scheduler = new FixedRetryScheduler(10);
+            _config = new CircuitBreakerConfig
+            {
+                ExpectedExceptionListType = ExceptionListType.BlackList,
+                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+            };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
+            _circuitBreaker = Factory.RegisterBreaker(_config);
             _thrownException = new NullReferenceException();
         }
 

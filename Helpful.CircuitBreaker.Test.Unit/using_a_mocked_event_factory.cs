@@ -1,9 +1,11 @@
-﻿using Helpful.BDD;
-using Helpful.CircuitBreaker.Events;
-using Moq;
-
-namespace Helpful.CircuitBreaker.Test.Unit
+﻿namespace Helpful.CircuitBreaker.Test.Unit
 {
+    using BDD;
+    using Events;
+    using Moq;
+    using NUnit.Framework;
+
+    [Category("Unit")]
     abstract class using_a_mocked_event_factory : TestBase
     {
         protected Mock<IEventFactory> EventFactory { get; private set; }
@@ -11,7 +13,7 @@ namespace Helpful.CircuitBreaker.Test.Unit
         protected Mock<IClosedEvent> ClosedEvent { get; private set; }
         protected Mock<IOpenedEvent> OpenedEvent { get; private set; }
         protected Mock<IRegisterBreakerEvent> RegisterBreakerEvent { get; private set; }
-        protected Mock<ITolleratedOpenEvent> TolleratedOpenEvent { get; private set; }
+        protected Mock<ITolleratedOpenEvent> ToleratedOpenEvent { get; private set; }
         protected Mock<ITryingToCloseEvent> TryingToCloseEvent { get; private set; }
         protected Mock<IUnregisterBreakerEvent> UnregisterBreakerEvent { get; private set; }
 
@@ -21,21 +23,22 @@ namespace Helpful.CircuitBreaker.Test.Unit
             ClosedEvent = new Mock<IClosedEvent>();
             OpenedEvent = new Mock<IOpenedEvent>();
             RegisterBreakerEvent = new Mock<IRegisterBreakerEvent>();
-            TolleratedOpenEvent = new Mock<ITolleratedOpenEvent>();
+            ToleratedOpenEvent = new Mock<ITolleratedOpenEvent>();
             TryingToCloseEvent = new Mock<ITryingToCloseEvent>();
             UnregisterBreakerEvent = new Mock<IUnregisterBreakerEvent>();
             EventFactory.Setup(ef => ef.GetClosedEvent()).Returns(ClosedEvent.Object);
             EventFactory.Setup(ef => ef.GetOpenedEvent()).Returns(OpenedEvent.Object);
             EventFactory.Setup(ef => ef.GetRegisterBreakerEvent()).Returns(RegisterBreakerEvent.Object);
-            EventFactory.Setup(ef => ef.GetTolleratedOpenEvent()).Returns(TolleratedOpenEvent.Object);
+            EventFactory.Setup(ef => ef.GetTolleratedOpenEvent()).Returns(ToleratedOpenEvent.Object);
             EventFactory.Setup(ef => ef.GetTriedToCloseEvent()).Returns(TryingToCloseEvent.Object);
             EventFactory.Setup(ef => ef.GetUnregisterBreakerEvent()).Returns(UnregisterBreakerEvent.Object);
             Factory = new CircuitBreakerFactory(EventFactory.Object);
         }
 
-        protected void ForceBreakerState(CircuitBreaker breaker, BreakerState state)
+        [TearDown]
+        public void TearDown()
         {
-            typeof (CircuitBreaker).GetProperty("State").SetValue(breaker, state, null);
+            CircuitBreaker.SchedulerActivator = null;
         }
     }
 }

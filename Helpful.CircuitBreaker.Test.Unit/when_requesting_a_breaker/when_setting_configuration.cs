@@ -1,27 +1,30 @@
-﻿using Helpful.BDD;
-using Helpful.CircuitBreaker;
-using Helpful.CircuitBreaker.Schedulers;
-using Helpful.CircuitBreaker.Test.Unit;
-using NUnit.Framework;
-
-namespace when_requesting_a_breaker
+﻿namespace when_requesting_a_breaker
 {
+    using Helpful.BDD;
+    using Helpful.CircuitBreaker;
+    using Helpful.CircuitBreaker.Config;
+    using Helpful.CircuitBreaker.Test.Unit;
+    using NUnit.Framework;
+
     class when_setting_configuration : using_a_mocked_event_factory
     {
         private CircuitBreaker _circuitBreaker;
         private CircuitBreakerConfig _config;
-        private IRetryScheduler _scheduler;
 
         protected override void Given()
         {
             base.Given();
-            _config = new CircuitBreakerConfig();
-            _scheduler = new FixedRetryScheduler(10);
+            _config = new CircuitBreakerConfig
+            {
+                BreakerId = "MyTestBreaker",
+                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+            };
         }
 
         protected override void When()
         {
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
+            Factory.RegisterBreaker(_config);
+            _circuitBreaker = Factory.GetBreaker("MyTestBreaker");
         }
 
         [Then]

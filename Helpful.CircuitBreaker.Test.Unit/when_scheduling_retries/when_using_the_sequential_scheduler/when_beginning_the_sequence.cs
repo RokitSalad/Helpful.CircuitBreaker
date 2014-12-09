@@ -1,11 +1,13 @@
-﻿using System;
-using Helpful.BDD;
-using Helpful.CircuitBreaker.Schedulers;
-using NUnit.Framework;
-
-namespace when_scheduling_retries.when_using_the_sequential_scheduler
+﻿namespace when_scheduling_retries.when_using_the_sequential_scheduler
 {
-    class when_begining_the_sequence : TestBase
+    using System;
+    using Helpful.BDD;
+    using Helpful.CircuitBreaker.Config;
+    using Helpful.CircuitBreaker.Schedulers;
+    using NUnit.Framework;
+
+    [Category("Unit")]
+    class when_beginning_the_sequence : TestBase
     {
         SequentialRetryScheduler _scheduler;
         DateTime _seedTime;
@@ -13,7 +15,11 @@ namespace when_scheduling_retries.when_using_the_sequential_scheduler
         protected override void Given()
         {
             base.Given();
-            _scheduler = new SequentialRetryScheduler(new[] { 1, 2, 3 });
+            _scheduler = _scheduler =
+                new SequentialRetryScheduler(new SequentialRetrySchedulerConfig
+                {
+                    RetrySequenceSeconds = new[] {1, 2, 3}
+                });
             _seedTime = DateTime.UtcNow;
         }
 

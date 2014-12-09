@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Helpful.BDD;
-using Helpful.CircuitBreaker;
-using Helpful.CircuitBreaker.Events;
-using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
-using NUnit.Framework;
-
-namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_trying_to_close.when_configured_to_use_timeout
+﻿namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_trying_to_close.when_configured_to_use_timeout
 {
+    using System;
+    using System.Collections.Generic;
+    using Helpful.BDD;
+    using Helpful.CircuitBreaker;
+    using Helpful.CircuitBreaker.Config;
+    using Helpful.CircuitBreaker.Test.Unit;
+    using Moq;
+    using NUnit.Framework;
+
     class when_there_is_no_exception : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
@@ -26,10 +25,14 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 ExpectedExceptionList = new List<Type> { typeof (IndexOutOfRangeException) },
                 OpenEventTolerance = 5,
             };
+            
             _scheduler = new Mock<IRetryScheduler>();
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler.Object);
-            ForceBreakerState(_circuitBreaker, BreakerState.Open);
+            CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
+
+
+            _circuitBreaker = Factory.RegisterBreaker(_config);
+            _circuitBreaker.State = BreakerState.Open;
 
             // need to reset expectations after the constructor has run
             _scheduler.ResetCalls();
