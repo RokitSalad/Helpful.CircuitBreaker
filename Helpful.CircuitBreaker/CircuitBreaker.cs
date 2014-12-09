@@ -20,7 +20,6 @@ namespace Helpful.CircuitBreaker
         private readonly ITolleratedOpenEvent _toleratedOpenEventHandler;
         private readonly ITryingToCloseEvent _tryingToCloseEventHandler;
 
-        private BreakerState _state;
         private short _toleratedOpenEventCount;
 
         internal CircuitBreaker(
@@ -55,11 +54,7 @@ namespace Helpful.CircuitBreaker
         /// <value>
         ///     The state.
         /// </value>
-        public BreakerState State
-        {
-            get { return _state; }
-            internal set { _state = value; }
-        }
+        public BreakerState State { get; internal set; }
 
         /// <summary>
         /// Gets the breaker identifier.
@@ -168,7 +163,7 @@ namespace Helpful.CircuitBreaker
 
         private void HandleOpenBreaker()
         {
-            if (_state == BreakerState.Open)
+            if (State == BreakerState.Open)
             {
                 if (_retryScheduler.AllowRetry)
                 {
@@ -221,7 +216,7 @@ namespace Helpful.CircuitBreaker
                 OpenBreaker(BreakerOpenReason.Exception, e);
                 throw new CircuitBreakerExecutionErrorException(_config, e);
             }
-            if (_state == BreakerState.HalfOpen)
+            if (State == BreakerState.HalfOpen)
                 CloseBreaker();
 
             throw e;
@@ -234,11 +229,11 @@ namespace Helpful.CircuitBreaker
 
         private void OpenBreaker(BreakerOpenReason reason, Exception thrownException = null)
         {
-            if (_state != BreakerState.Open)
+            if (State != BreakerState.Open)
             {
-                if (_state == BreakerState.HalfOpen || _toleratedOpenEventCount >= _config.OpenEventTolerance)
+                if (State == BreakerState.HalfOpen || _toleratedOpenEventCount >= _config.OpenEventTolerance)
                 {
-                    _state = BreakerState.Open;
+                    State = BreakerState.Open;
                     _retryScheduler.BeginNextPeriod(DateTime.UtcNow);
                     _openedEventHandler.RaiseEvent(_config, reason, thrownException);
                     _toleratedOpenEventCount = 0;
@@ -252,19 +247,19 @@ namespace Helpful.CircuitBreaker
 
         private void CloseBreaker()
         {
-            if (_state != BreakerState.Closed)
+            if (State != BreakerState.Closed)
             {
                 _retryScheduler.Reset();
-                _state = BreakerState.Closed;
+                State = BreakerState.Closed;
                 _closedEventHandler.RaiseEvent(_config);
             }
         }
 
         private void TryToCloseBreaker()
         {
-            if (_state != BreakerState.HalfOpen)
+            if (State != BreakerState.HalfOpen)
             {
-                _state = BreakerState.HalfOpen;
+                State = BreakerState.HalfOpen;
                 _tryingToCloseEventHandler.RaiseEvent(_config);
             }
         }
