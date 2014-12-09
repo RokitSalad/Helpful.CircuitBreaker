@@ -2,6 +2,13 @@
 ## Quick Start ##
 ```c#
 CircuitBreakerFactory circuitBreakerFactory = new CircuitBreakerFactory(new MyEventFactory());
+```
+Creates a new instance of the circuit breaker factory wiht your own implementation of the event factory.
+Or use one of the prebuilt ones available here:
+ - [Azure Queue Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureQueue)
+ - [Azure WAD Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureWad)
+ - [Eventstore Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.EventStore)
+ ```
 var circuitBreakerConfig = new CircuitBreakerConfig
 {
 	//The Breaker ID
