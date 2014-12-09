@@ -1,18 +1,18 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using Helpful.BDD;
+using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
+using Helpful.CircuitBreaker.Events;
+using Helpful.CircuitBreaker.Exceptions;
+using Helpful.CircuitBreaker.Test.Unit;
+using Moq;
+using NUnit.Framework;
+
 namespace when_executing_code_via_the_breaker.when_tolerating_open_events
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using Helpful.BDD;
-    using Helpful.CircuitBreaker;
-    using Helpful.CircuitBreaker.Config;
-    using Helpful.CircuitBreaker.Events;
-    using Helpful.CircuitBreaker.Exceptions;
-    using Helpful.CircuitBreaker.Test.Unit;
-    using Moq;
-    using NUnit.Framework;
-
     class when_hitting_timeouts_beyond_tolerance : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;

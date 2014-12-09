@@ -1,11 +1,11 @@
-﻿namespace when_scheduling_retries.when_using_the_fixed_scheduler
-{
-    using System;
-    using Helpful.BDD;
-    using Helpful.CircuitBreaker.Config;
-    using Helpful.CircuitBreaker.Schedulers;
-    using NUnit.Framework;
+﻿using System;
+using Helpful.BDD;
+using Helpful.CircuitBreaker.Config;
+using Helpful.CircuitBreaker.Schedulers;
+using NUnit.Framework;
 
+namespace when_scheduling_retries.when_using_the_fixed_scheduler
+{
     [Category("Unit")]
     class when_the_allowed_retry_time_has_passed : TestBase
     {

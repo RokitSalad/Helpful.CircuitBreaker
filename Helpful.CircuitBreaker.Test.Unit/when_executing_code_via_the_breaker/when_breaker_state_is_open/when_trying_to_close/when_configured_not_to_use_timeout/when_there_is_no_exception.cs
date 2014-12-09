@@ -1,14 +1,14 @@
-﻿namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_trying_to_close.when_configured_not_to_use_timeout
-{
-    using System;
-    using System.Collections.Generic;
-    using Helpful.BDD;
-    using Helpful.CircuitBreaker;
-    using Helpful.CircuitBreaker.Config;
-    using Helpful.CircuitBreaker.Test.Unit;
-    using Moq;
-    using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Helpful.BDD;
+using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
+using Helpful.CircuitBreaker.Test.Unit;
+using Moq;
+using NUnit.Framework;
 
+namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_trying_to_close.when_configured_not_to_use_timeout
+{
     class when_there_is_no_exception : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;

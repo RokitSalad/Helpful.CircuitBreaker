@@ -1,11 +1,11 @@
-﻿namespace when_requesting_a_breaker
-{
-    using Helpful.BDD;
-    using Helpful.CircuitBreaker;
-    using Helpful.CircuitBreaker.Config;
-    using Helpful.CircuitBreaker.Test.Unit;
-    using NUnit.Framework;
+﻿using Helpful.BDD;
+using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
+using Helpful.CircuitBreaker.Test.Unit;
+using NUnit.Framework;
 
+namespace when_requesting_a_breaker
+{
     class when_setting_configuration : using_a_mocked_event_factory
     {
         private CircuitBreaker _circuitBreaker;

@@ -1,11 +1,11 @@
-﻿namespace when_scheduling_retries.when_using_the_fixed_scheduler
-{
-    using System;
-    using Helpful.BDD;
-    using Helpful.CircuitBreaker.Config;
-    using Helpful.CircuitBreaker.Schedulers;
-    using NUnit.Framework;
+﻿using System;
+using Helpful.BDD;
+using Helpful.CircuitBreaker.Config;
+using Helpful.CircuitBreaker.Schedulers;
+using NUnit.Framework;
 
+namespace when_scheduling_retries.when_using_the_fixed_scheduler
+{
     [Category("Unit")]
     class when_beginning_subsequent_periods : TestBase
     {

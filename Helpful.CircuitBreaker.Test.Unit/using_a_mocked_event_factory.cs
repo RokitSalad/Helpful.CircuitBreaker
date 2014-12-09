@@ -1,13 +1,19 @@
-﻿namespace Helpful.CircuitBreaker.Test.Unit
-{
-    using BDD;
-    using Events;
-    using Moq;
-    using NUnit.Framework;
+﻿using Helpful.BDD;
+using Helpful.CircuitBreaker.Events;
+using Moq;
+using NUnit.Framework;
 
+namespace Helpful.CircuitBreaker.Test.Unit
+{
     [Category("Unit")]
     abstract class using_a_mocked_event_factory : TestBase
     {
+        [TearDown]
+        public void TearDown()
+        {
+            CircuitBreaker.SchedulerActivator = null;
+        }
+
         protected Mock<IEventFactory> EventFactory { get; private set; }
         protected CircuitBreakerFactory Factory { get; private set; }
         protected Mock<IClosedEvent> ClosedEvent { get; private set; }
@@ -33,12 +39,6 @@
             EventFactory.Setup(ef => ef.GetTriedToCloseEvent()).Returns(TryingToCloseEvent.Object);
             EventFactory.Setup(ef => ef.GetUnregisterBreakerEvent()).Returns(UnregisterBreakerEvent.Object);
             Factory = new CircuitBreakerFactory(EventFactory.Object);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            CircuitBreaker.SchedulerActivator = null;
         }
     }
 }
