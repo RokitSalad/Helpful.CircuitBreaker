@@ -1,6 +1,7 @@
 # Helpful.CircuitBreaker #
 
 [Nuget](https://www.nuget.org/packages/Helpful.CircuitBreaker/)
+
 ```powershell
 Install-Package Helpful.CircuitBreaker
 ```
@@ -14,6 +15,9 @@ Or use one of the prebuilt ones available here:
  - [Azure Queue Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureQueue)
  - [Azure WAD Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureWad)
  - [Eventstore Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.EventStore)
+
+The CircuitBreakerFactory is used to register and retrieve instances of the circuit breaker. 
+You should use at least one circuit breaker per type and give it a BreakerId releated to the type of the circuit that is being circuit broken and the environment it is being run in.
 
 ```c#
 var circuitBreakerConfig = new CircuitBreakerConfig
