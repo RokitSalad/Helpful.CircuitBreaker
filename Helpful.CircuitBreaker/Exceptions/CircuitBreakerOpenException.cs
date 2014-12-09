@@ -1,7 +1,7 @@
-﻿namespace Helpful.CircuitBreaker.Exceptions
-{
-    using Config;
+﻿using Helpful.CircuitBreaker.Config;
 
+namespace Helpful.CircuitBreaker.Exceptions
+{
     /// <summary>
     /// 
     /// </summary>

@@ -1,9 +1,9 @@
-﻿namespace Helpful.CircuitBreaker.Config
-{
-    using System;
-    using System.Collections.Generic;
-    using Events;
+﻿using System;
+using System.Collections.Generic;
+using Helpful.CircuitBreaker.Events;
 
+namespace Helpful.CircuitBreaker.Config
+{
     /// <summary>
     /// 
     /// </summary>

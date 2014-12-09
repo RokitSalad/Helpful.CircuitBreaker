@@ -1,10 +1,10 @@
-﻿namespace Helpful.CircuitBreaker
-{
-    using System;
-    using System.Collections.Concurrent;
-    using Config;
-    using Events;
+﻿using System;
+using System.Collections.Concurrent;
+using Helpful.CircuitBreaker.Config;
+using Helpful.CircuitBreaker.Events;
 
+namespace Helpful.CircuitBreaker
+{
     /// <summary>
     /// Registers and issues circuit breakers 
     /// </summary>

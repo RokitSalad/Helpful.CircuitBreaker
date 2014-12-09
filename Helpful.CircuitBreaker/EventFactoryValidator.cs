@@ -1,7 +1,7 @@
-﻿namespace Helpful.CircuitBreaker
-{
-    using Events;
+﻿using Helpful.CircuitBreaker.Events;
 
+namespace Helpful.CircuitBreaker
+{
     internal static class EventFactoryValidator
     {
         internal static bool Validate(this IEventFactory eventFactory)

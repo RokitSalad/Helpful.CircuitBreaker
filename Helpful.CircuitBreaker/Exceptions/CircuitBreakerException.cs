@@ -1,8 +1,8 @@
+using System;
+using Helpful.CircuitBreaker.Config;
+
 namespace Helpful.CircuitBreaker.Exceptions
 {
-    using System;
-    using Config;
-
     /// <summary>
     /// 
     /// </summary>

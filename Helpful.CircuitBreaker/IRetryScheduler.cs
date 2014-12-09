@@ -1,7 +1,7 @@
+using System;
+
 namespace Helpful.CircuitBreaker
 {
-    using System;
-
     /// <summary>
     /// 
     /// </summary>

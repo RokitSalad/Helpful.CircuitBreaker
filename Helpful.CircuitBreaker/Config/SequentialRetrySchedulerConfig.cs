@@ -1,8 +1,8 @@
+using System;
+using Helpful.CircuitBreaker.Schedulers;
+
 namespace Helpful.CircuitBreaker.Config
 {
-    using System;
-    using Schedulers;
-
     /// <summary>
     /// 
     /// </summary>

@@ -1,12 +1,12 @@
-﻿namespace Helpful.CircuitBreaker
-{
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Config;
-    using Events;
-    using Exceptions;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Helpful.CircuitBreaker.Config;
+using Helpful.CircuitBreaker.Events;
+using Helpful.CircuitBreaker.Exceptions;
 
+namespace Helpful.CircuitBreaker
+{
     /// <summary>
     /// </summary>
     public class CircuitBreaker
@@ -154,9 +154,9 @@
         /// <typeparam name="T"></typeparam>
         /// <param name="function">The function.</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">function</exception>
-        /// <exception cref="CircuitBreakerException">Condition.</exception>
-        /// <exception cref="ArgumentNullException">The value of 'function' cannot be null.</exception>
+        /// <exception cref="ArgumentNullException">The value of 'function' cannot be null. </exception>
+        /// <exception cref="CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
         public T Execute<T>(Func<T> function)
         {
             if (function == null)
