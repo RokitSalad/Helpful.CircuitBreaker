@@ -2,19 +2,18 @@
 using System.Threading;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Schedulers;
 using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker
 {
-    class when_hitting_a_timeout : using_a_mocked_event_factory
+    internal class when_hitting_a_timeout : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
         private TimeSpan _timeout;
         private CircuitBreaker _circuitBreaker;
-        private IRetryScheduler _scheduler;
         private Exception _caughtException;
 
         protected override void Given()
@@ -22,12 +21,12 @@ namespace when_executing_code_via_the_breaker
             base.Given();
             _timeout = TimeSpan.FromMilliseconds(1000);
             _config = new CircuitBreakerConfig
-                {
-                    UseTimeout = true,
-                    Timeout = _timeout
-                };
-            _scheduler = new FixedRetryScheduler(10);
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler);
+            {
+                UseTimeout = true,
+                Timeout = _timeout,
+                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+            };
+            _circuitBreaker = Factory.RegisterBreaker(_config);
         }
 
         protected override void When()

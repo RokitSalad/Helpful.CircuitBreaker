@@ -1,10 +1,12 @@
 ﻿using System;
 using Helpful.BDD;
+using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Schedulers;
 using NUnit.Framework;
 
 namespace when_scheduling_retries.when_using_the_sequential_scheduler
 {
+    [Category("Unit")]
     class when_the_allowed_retry_time_has_passed : TestBase
     {
         SequentialRetryScheduler _scheduler;
@@ -13,7 +15,11 @@ namespace when_scheduling_retries.when_using_the_sequential_scheduler
         protected override void Given()
         {
             base.Given();
-            _scheduler = new SequentialRetryScheduler(new[] { 10 });
+            _scheduler = _scheduler =
+                new SequentialRetryScheduler(new SequentialRetrySchedulerConfig
+                {
+                    RetrySequenceSeconds = new[] {10}
+                });
             _seedTime = DateTime.UtcNow.AddSeconds(-10);
         }
 

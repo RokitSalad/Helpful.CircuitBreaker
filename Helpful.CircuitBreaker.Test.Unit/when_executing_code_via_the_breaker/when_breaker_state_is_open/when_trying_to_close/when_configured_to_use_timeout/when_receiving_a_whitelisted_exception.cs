@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Test.Unit;
 using Moq;
 using NUnit.Framework;
@@ -29,10 +30,12 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
             };
             _scheduler = new Mock<IRetryScheduler>();
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler.Object);
+            CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
+
+            _circuitBreaker = Factory.RegisterBreaker(_config);
             _thrownException = new IndexOutOfRangeException();
 
-            ForceBreakerState(_circuitBreaker, BreakerState.Open);
+            _circuitBreaker.State = BreakerState.Open;
 
             // need to reset expectations after the constructor has run
             _scheduler.ResetCalls();
@@ -70,10 +73,9 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         }
 
         [Then]
-        public void the_exception_should_be_an_aggregate_exception_containing_the_thrown_exception()
+        public void the_exception_should_be_the_thrown_exception()
         {
-            Assert.That(_caughtException, Is.InstanceOf(typeof(AggregateException)));
-            Assert.That(((AggregateException)_caughtException).InnerExceptions, Contains.Item(_thrownException));
+            Assert.That(_caughtException, Is.InstanceOf(typeof(IndexOutOfRangeException)));
         }
 
         [Then]

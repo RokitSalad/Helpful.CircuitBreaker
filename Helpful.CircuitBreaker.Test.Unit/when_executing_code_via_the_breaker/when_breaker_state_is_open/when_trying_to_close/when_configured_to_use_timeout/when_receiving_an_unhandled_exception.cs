@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
 using Helpful.CircuitBreaker.Test.Unit;
@@ -31,9 +32,11 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
             };
             _scheduler = new Mock<IRetryScheduler>();
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler.Object);
+            CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
+
+            _circuitBreaker = Factory.RegisterBreaker(_config);
             _thrownException = new IndexOutOfRangeException();
-            ForceBreakerState(_circuitBreaker, BreakerState.Open);
+            _circuitBreaker.State = BreakerState.Open;
         }
 
         protected override void When()
@@ -57,13 +60,13 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         [Then]
         public void the_open_event_should_be_fired()
         {
-            OpenedEvent.Verify(e => e.RaiseEvent(_config, BreakerOpenReason.Exception, It.IsAny<AggregateException>()), Times.Once);
+            OpenedEvent.Verify(e => e.RaiseEvent(_config, BreakerOpenReason.Exception, _thrownException), Times.Once);
         }
       
         [Then]
-        public void no_exceptions_should_be_tollerated()
+        public void no_exceptions_should_be_tolerated()
         {
-            TolleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, 
+            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, 
                 It.IsAny<BreakerOpenReason>(), It.IsAny<Exception>()), Times.Never);
         }
 
@@ -86,10 +89,9 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         }
 
         [Then]
-        public void the_inner_exception_should_be_an_aggregate_exception_containing_the_thrown_exception()
+        public void the_inner_exception_should_be_the_thrown_exception()
         {
-            Assert.That(_caughtException.InnerException, Is.InstanceOf(typeof(AggregateException)));
-            Assert.That(((AggregateException)_caughtException.InnerException).InnerExceptions, Contains.Item(_thrownException));
+            Assert.That(_caughtException.InnerException, Is.InstanceOf(typeof(IndexOutOfRangeException)));
         }
 
         [Then]

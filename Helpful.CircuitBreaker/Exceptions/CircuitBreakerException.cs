@@ -1,21 +1,42 @@
 using System;
+using Helpful.CircuitBreaker.Config;
 
 namespace Helpful.CircuitBreaker.Exceptions
 {
-    public class CircuitBreakerException : Exception
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract class CircuitBreakerException : Exception
     {
-        public CircuitBreakerConfig Config { get; private set; }
-
-        public CircuitBreakerException(CircuitBreakerConfig config)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CircuitBreakerException"/> class.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        protected CircuitBreakerException(CircuitBreakerConfig config)
         {
             AddConfig(config);
         }
 
-        protected CircuitBreakerException(CircuitBreakerConfig config, Exception innerException) : base(string.Empty, innerException)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CircuitBreakerException"/> class.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="innerException">The inner exception.</param>
+        protected CircuitBreakerException(CircuitBreakerConfig config, Exception innerException)
+            : base(string.Empty, innerException)
         {
+            AddConfig(config);
         }
 
-        protected void AddConfig(CircuitBreakerConfig config)
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
+        public CircuitBreakerConfig Config { get; private set; }
+
+        private void AddConfig(CircuitBreakerConfig config)
         {
             Config = config;
             Data.Add("CircuitBreakerConfig", Config);

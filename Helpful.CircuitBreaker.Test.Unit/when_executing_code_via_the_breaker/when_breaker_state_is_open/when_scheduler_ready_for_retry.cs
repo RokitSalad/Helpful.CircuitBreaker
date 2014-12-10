@@ -1,6 +1,7 @@
 ﻿using System;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Exceptions;
 using Helpful.CircuitBreaker.Test.Unit;
 using Moq;
@@ -19,10 +20,13 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open
         {
             base.Given();
             _config = new CircuitBreakerConfig();
+
             _scheduler = new Mock<IRetryScheduler>();
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler.Object);
-            ForceBreakerState(_circuitBreaker, BreakerState.Open);
+            CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
+
+            _circuitBreaker = Factory.RegisterBreaker(_config);
+            _circuitBreaker.State = BreakerState.Open;
         }
 
         protected override void When()

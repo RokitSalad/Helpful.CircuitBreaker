@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
+using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
 using Helpful.CircuitBreaker.Test.Unit;
@@ -18,6 +19,8 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         private Mock<IRetryScheduler> _scheduler;
         private Exception _caughtException;
 
+
+
         protected override void Given()
         {
             base.Given();
@@ -28,18 +31,21 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 OpenEventTolerance = 5,
                 UseTimeout = true,
                 Timeout = TimeSpan.FromMilliseconds(100),
+                SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 10}
             };
             _scheduler = new Mock<IRetryScheduler>();
+            CircuitBreaker.SchedulerActivator = config => _scheduler.Object;
+
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            _circuitBreaker = Factory.GetBreaker(_config, _scheduler.Object);
-            ForceBreakerState(_circuitBreaker, BreakerState.Open);
+            _circuitBreaker = Factory.RegisterBreaker(_config);
+            _circuitBreaker.State = BreakerState.Open;
         }
 
         protected override void When()
         {
             try
             {
-                _circuitBreaker.Execute(() => { Thread.Sleep(1000); });
+                _circuitBreaker.Execute(() => Thread.Sleep(1000));
             }
             catch (Exception e)
             {
@@ -60,9 +66,9 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         }
       
         [Then]
-        public void no_exceptions_should_be_tollerated()
+        public void no_exceptions_should_be_tolerated()
         {
-            TolleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, 
+            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, 
                 It.IsAny<BreakerOpenReason>(), It.IsAny<Exception>()), Times.Never);
         }
 
