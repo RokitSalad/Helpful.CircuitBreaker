@@ -62,7 +62,7 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         }
       
         [Then]
-        public void no_exceptions_should_be_Tolerated()
+        public void no_exceptions_should_be_tolerated()
         {
             ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, 
                 It.IsAny<BreakerOpenReason>(), It.IsAny<Exception>()), Times.Never);
