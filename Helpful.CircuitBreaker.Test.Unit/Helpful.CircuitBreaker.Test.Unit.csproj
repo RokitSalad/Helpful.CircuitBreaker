@@ -70,7 +70,7 @@
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_before_hitting_a_timeout.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_in_the_whitelist\when_permitted_exception_pass_through_is_set_to_swallow.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_in_the_whitelist\when_permitted_exception_pass_through_is_set_to_pass_through.cs" />
-    <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_not_in_the_blacklist\Copy of when_permitted_exception_pass_through_is_set_to_pass_through.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_not_in_the_blacklist\when_permitted_exception_pass_through_is_set_to_pass_through.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_not_in_the_blacklist\when_permitted_exception_pass_through_is_set_to_swallow.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_not_in_the_whitelist.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_unhandled_exception.cs" />
