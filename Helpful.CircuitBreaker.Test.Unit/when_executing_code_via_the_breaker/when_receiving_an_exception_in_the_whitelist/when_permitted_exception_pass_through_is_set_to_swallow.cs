@@ -5,26 +5,28 @@ using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
-namespace when_executing_code_via_the_breaker
+namespace when_executing_code_via_the_breaker.when_receiving_an_exception_in_the_whitelist
 {
-    class when_receiving_an_exception_not_in_the_blacklist : using_a_mocked_event_factory
+    class when_permitted_exception_pass_through_is_set_to_swallow : using_a_mocked_event_factory
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private Exception _caughtException;
-        private NullReferenceException _thrownException;
+        private ArgumentNullException _thrownException;
 
         protected override void Given()
         {
             base.Given();
             _config = new CircuitBreakerConfig
             {
-                ExpectedExceptionListType = ExceptionListType.BlackList,
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+                ExpectedExceptionListType = ExceptionListType.WhiteList,
+                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10},
+                PermittedExceptionPassThrough = PermittedExceptionBehaviour.Swallow
             };
+
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
             _circuitBreaker = Factory.RegisterBreaker(_config);
-            _thrownException = new NullReferenceException();
+            _thrownException = new ArgumentNullException();
         }
 
         protected override void When()
@@ -40,15 +42,9 @@ namespace when_executing_code_via_the_breaker
         }
 
         [Then]
-        public void an_exception_should_be_thrown()
+        public void no_exception_should_be_thrown()
         {
-            Assert.That(_caughtException, Is.Not.Null);
-        }
-
-        [Then]
-        public void the_exception_should_be_the_thrown_exception()
-        {
-            Assert.That(_caughtException, Is.EqualTo(_thrownException));
+            Assert.That(_caughtException, Is.Null);
         }
 
         [Then]

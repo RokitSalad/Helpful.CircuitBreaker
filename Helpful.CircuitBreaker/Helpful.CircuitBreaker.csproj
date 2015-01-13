@@ -51,6 +51,7 @@
     <Compile Include="Config\CircuitBreakerConfig.cs" />
     <Compile Include="Config\FixedRetrySchedulerConfig.cs" />
     <Compile Include="Config\ISchedulerConfig.cs" />
+    <Compile Include="Config\PermittedExceptionBehaviour.cs" />
     <Compile Include="Config\SequentialRetrySchedulerConfig.cs" />
     <Compile Include="EventFactoryValidator.cs" />
     <Compile Include="ExceptionListType.cs" />

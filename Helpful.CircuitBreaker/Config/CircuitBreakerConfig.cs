@@ -17,6 +17,7 @@ namespace Helpful.CircuitBreaker.Config
         {
             ExpectedExceptionList = new List<Type>();
             ExpectedExceptionListType = ExceptionListType.None;
+            PermittedExceptionPassThrough = PermittedExceptionBehaviour.PassThrough;
         }
 
         /// <summary>
@@ -74,5 +75,10 @@ namespace Helpful.CircuitBreaker.Config
         /// The breaker identifier.
         /// </value>
         public string BreakerId { get; set; }
+
+        /// <summary>
+        /// Sets the behaviour for passing through exceptions that won't open the breaker
+        /// </summary>
+        public PermittedExceptionBehaviour PermittedExceptionPassThrough { get; set; }
     }
 }

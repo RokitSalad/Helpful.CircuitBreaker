@@ -134,7 +134,7 @@ namespace Helpful.CircuitBreaker
                 ae.Handle(x =>
                 {
                     HandleException(x);
-                    return false;
+                    return true;
                 });
             }
             catch (Exception e)
@@ -203,7 +203,9 @@ namespace Helpful.CircuitBreaker
                 OpenBreaker(BreakerOpenReason.Exception, e);
                 throw new CircuitBreakerExecutionErrorException(_config, e);
             }
-            throw e;
+
+            if (_config.PermittedExceptionPassThrough == PermittedExceptionBehaviour.PassThrough)
+                throw e;
         }
 
         private void ProcessWhiteList(Exception e)
@@ -219,7 +221,8 @@ namespace Helpful.CircuitBreaker
             if (State == BreakerState.HalfOpen)
                 CloseBreaker();
 
-            throw e;
+            if(_config.PermittedExceptionPassThrough == PermittedExceptionBehaviour.PassThrough)
+                throw e;
         }
 
         private bool IsListedType(Exception e)
