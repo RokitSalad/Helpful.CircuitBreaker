@@ -31,7 +31,7 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
             CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
 
 
-            _circuitBreaker = Factory.RegisterBreaker(_config);
+            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _circuitBreaker.State = BreakerState.Open;
 
             // need to reset expectations after the constructor has run

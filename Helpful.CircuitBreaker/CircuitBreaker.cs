@@ -9,9 +9,9 @@ namespace Helpful.CircuitBreaker
 {
     /// <summary>
     /// </summary>
-    public class CircuitBreaker
+    public class CircuitBreaker : ICircuitBreaker, IDisposable
     {
-        internal static Func<ISchedulerConfig, IRetryScheduler> SchedulerActivator;
+        internal static Func<ISchedulerConfig, IRetryScheduler> SchedulerActivator { get; set; }
 
         private readonly IClosedEvent _closedEventHandler;
         private readonly CircuitBreakerConfig _config;
@@ -19,31 +19,31 @@ namespace Helpful.CircuitBreaker
         private readonly IRetryScheduler _retryScheduler;
         private readonly ITolleratedOpenEvent _toleratedOpenEventHandler;
         private readonly ITryingToCloseEvent _tryingToCloseEventHandler;
+        private readonly IUnregisterBreakerEvent _unregisterEventHandler;
+        private bool _disposed;
 
         private short _toleratedOpenEventCount;
 
-        internal CircuitBreaker(
-            IClosedEvent closedEventHandler,
-            IOpenedEvent openedEventHandler,
-            ITryingToCloseEvent tryingToCloseEventHandler,
-            ITolleratedOpenEvent toleratedOpenEventHandler,
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="eventFactory">The factory for generating event handlers</param>
+        /// <param name="config">The config for the breaker</param>
+        public CircuitBreaker(
+            IEventFactory eventFactory,
             CircuitBreakerConfig config
             )
         {
-            _closedEventHandler = closedEventHandler;
-            _openedEventHandler = openedEventHandler;
-            _tryingToCloseEventHandler = tryingToCloseEventHandler;
-            _toleratedOpenEventHandler = toleratedOpenEventHandler;
+            _closedEventHandler = eventFactory.GetClosedEvent();
+            _openedEventHandler = eventFactory.GetOpenedEvent();
+            _tryingToCloseEventHandler = eventFactory.GetTriedToCloseEvent();
+            _toleratedOpenEventHandler = eventFactory.GetTolleratedOpenEvent();
+            _unregisterEventHandler = eventFactory.GetUnregisterBreakerEvent();
             _config = config;
 
-            if (SchedulerActivator == null)
-            {
-                _retryScheduler = DefaultSchedulerActivator(config.SchedulerConfig);
-            }
-            else
-            {
-                _retryScheduler = SchedulerActivator(config.SchedulerConfig);
-            }
+            _retryScheduler = SchedulerActivator == null
+                                  ? DefaultSchedulerActivator(config.SchedulerConfig)
+                                  : SchedulerActivator(config.SchedulerConfig);
 
             CloseBreaker();
         }
@@ -264,6 +264,20 @@ namespace Helpful.CircuitBreaker
             {
                 State = BreakerState.HalfOpen;
                 _tryingToCloseEventHandler.RaiseEvent(_config);
+            }
+        }
+
+        ~CircuitBreaker()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                _disposed = true;
+                _unregisterEventHandler.RaiseEvent(_config);
             }
         }
     }

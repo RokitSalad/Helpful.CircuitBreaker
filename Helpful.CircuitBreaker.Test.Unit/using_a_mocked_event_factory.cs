@@ -15,7 +15,6 @@ namespace Helpful.CircuitBreaker.Test.Unit
         }
 
         protected Mock<IEventFactory> EventFactory { get; private set; }
-        protected CircuitBreakerFactory Factory { get; private set; }
         protected Mock<IClosedEvent> ClosedEvent { get; private set; }
         protected Mock<IOpenedEvent> OpenedEvent { get; private set; }
         protected Mock<IRegisterBreakerEvent> RegisterBreakerEvent { get; private set; }
@@ -38,7 +37,6 @@ namespace Helpful.CircuitBreaker.Test.Unit
             EventFactory.Setup(ef => ef.GetTolleratedOpenEvent()).Returns(ToleratedOpenEvent.Object);
             EventFactory.Setup(ef => ef.GetTriedToCloseEvent()).Returns(TryingToCloseEvent.Object);
             EventFactory.Setup(ef => ef.GetUnregisterBreakerEvent()).Returns(UnregisterBreakerEvent.Object);
-            Factory = new CircuitBreakerFactory(EventFactory.Object);
         }
     }
 }
