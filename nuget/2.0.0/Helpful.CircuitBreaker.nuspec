@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Helpful.CircuitBreaker</id>
+    <version>2.0.0</version>
+    <title>Helpful.CircuitBreaker</title>
+    <authors>RokitSalad</authors>
+    <owners>RokitSalad</owners>
+    <licenseUrl>https://github.com/RokitSalad/Helpful.CircuitBreaker.Events/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/RokitSalad/Helpful.CircuitBreaker.Events</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains the logical implementation of a circuit breaker factory.</description>
+    <releaseNotes>Removed the CircuitBreakerFactory in favour of directly injecting CircuitBreakers into their consumers. Extracted interface from CircuitBreaker to ease mocking.</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>Circuit Breaker, C#</tags>
+    <dependencies>
+        <dependency id="Helpful.CircuitBreaker.Events" version="1.0.2" />
+    </dependencies>
+  </metadata>
+</package>
