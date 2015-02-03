@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace when_scheduling_retries.when_using_the_fixed_scheduler
 {
-    [Category("Unit")]
     class when_the_allowed_retry_time_has_passed : TestBase
     {
         FixedRetryScheduler _scheduler;

@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace when_scheduling_retries.when_using_the_sequential_scheduler
 {
-    [Category("Unit")]
     class when_beginning_the_sequence : TestBase
     {
         SequentialRetryScheduler _scheduler;

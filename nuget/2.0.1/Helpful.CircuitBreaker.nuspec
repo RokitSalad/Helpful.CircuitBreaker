@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Helpful.CircuitBreaker</id>
+    <version>2.0.1</version>
+    <title>Helpful.CircuitBreaker</title>
+    <authors>RokitSalad</authors>
+    <owners>RokitSalad</owners>
+    <licenseUrl>https://github.com/RokitSalad/Helpful.CircuitBreaker.Events/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/RokitSalad/Helpful.CircuitBreaker.Events</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains the logical implementation of a circuit breaker factory.</description>
+    <releaseNotes>Added the ability to return an ActionResult enum from the executed delegate - this can trigger opening a circuit breaker without needing an exception to be thrown. Useful for http Request / Response scenarios.</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>Circuit Breaker, C#</tags>
+    <dependencies>
+        <dependency id="Helpful.CircuitBreaker.Events" version="[1.0,2.0]" />
+    </dependencies>
+  </metadata>
+</package>

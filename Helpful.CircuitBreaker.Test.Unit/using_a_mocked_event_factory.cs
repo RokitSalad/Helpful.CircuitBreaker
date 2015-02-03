@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace Helpful.CircuitBreaker.Test.Unit
 {
-    [Category("Unit")]
     abstract class using_a_mocked_event_factory : TestBase
     {
         [TearDown]
