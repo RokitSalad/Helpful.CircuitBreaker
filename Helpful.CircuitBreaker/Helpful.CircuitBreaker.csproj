@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionResult.cs" />
     <Compile Include="BreakerState.cs" />
     <Compile Include="CircuitBreaker.cs" />
     <Compile Include="Config\CircuitBreakerConfig.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Config\SequentialRetrySchedulerConfig.cs" />
     <Compile Include="EventFactoryValidator.cs" />
     <Compile Include="ExceptionListType.cs" />
+    <Compile Include="Exceptions\ActionResultNotGoodException.cs" />
     <Compile Include="Exceptions\CircuitBreakerException.cs" />
     <Compile Include="Exceptions\CircuitBreakerExecutionErrorException.cs" />
     <Compile Include="Exceptions\CircuitBreakerOpenException.cs" />
@@ -66,7 +68,9 @@
     <Compile Include="Schedulers\SequentialRetryScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

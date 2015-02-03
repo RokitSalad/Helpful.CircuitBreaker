@@ -92,14 +92,7 @@ namespace Helpful.CircuitBreaker
             }
         }
 
-        /// <summary>
-        ///     Executes the specified action in the circuit breaker
-        /// </summary>
-        /// <param name="action">The action.</param>
-        /// <exception cref="CircuitBreakerTimedOutException">The action timed out </exception>
-        /// <exception cref="ArgumentNullException">The value of 'action' cannot be null.</exception>
-        /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
-        public void Execute(Action action)
+        public void Execute(Func<ActionResult> action)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
@@ -107,7 +100,7 @@ namespace Helpful.CircuitBreaker
             HandleOpenBreaker();
             try
             {
-                Task task = new TaskFactory()
+                Task<ActionResult> task = new TaskFactory()
                     .StartNew(action);
 
                 if (_config.UseTimeout)
@@ -117,10 +110,18 @@ namespace Helpful.CircuitBreaker
                     {
                         throw new CircuitBreakerTimedOutException(_config);
                     }
+                    if (task.Result != ActionResult.Good)
+                    {
+                        throw new ActionResultNotGoodException(_config);
+                    }
                 }
                 else
                 {
                     task.Wait();
+                    if (task.Result != ActionResult.Good)
+                    {
+                        throw new ActionResultNotGoodException(_config);
+                    }
                 }
                 CloseBreaker();
             }
@@ -141,6 +142,22 @@ namespace Helpful.CircuitBreaker
             {
                 HandleException(e);
             }
+        }
+
+        /// <summary>
+        ///     Executes the specified action in the circuit breaker
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <exception cref="CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="ArgumentNullException">The value of 'action' cannot be null.</exception>
+        /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
+        public void Execute(Action action)
+        {
+            Execute(() =>
+            {
+                action();
+                return ActionResult.Good;
+            });
         }
 
         /// <summary>

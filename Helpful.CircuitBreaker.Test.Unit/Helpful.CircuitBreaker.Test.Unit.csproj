@@ -75,6 +75,10 @@
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_exception_not_in_the_whitelist.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_an_unhandled_exception.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_receiving_a_blacklisted_exception.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_returning_an_action_result\when_a_timeout_is_set\when_the_action_result_is_failure.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_returning_an_action_result\when_a_timeout_is_set\when_the_action_result_is_good.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_returning_an_action_result\when_no_timeout_is_set\when_the_action_result_is_failure.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_returning_an_action_result\when_no_timeout_is_set\when_the_action_result_is_good.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_hitting_timeouts_beyond_tollerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_hitting_timeouts_within_tollerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_an_unhandled_exceptions_beyond_tolerance.cs" />

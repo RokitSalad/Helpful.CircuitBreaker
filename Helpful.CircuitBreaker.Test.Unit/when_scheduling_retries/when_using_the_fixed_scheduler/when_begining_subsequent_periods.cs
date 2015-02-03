@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace when_scheduling_retries.when_using_the_fixed_scheduler
 {
-    [Category("Unit")]
     class when_beginning_the_first_period : TestBase
     {
         FixedRetryScheduler _scheduler;
