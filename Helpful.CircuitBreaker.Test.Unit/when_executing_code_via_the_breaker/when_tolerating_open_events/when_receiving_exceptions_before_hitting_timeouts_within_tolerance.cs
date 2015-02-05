@@ -30,7 +30,7 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
                 OpenEventTolerance = 2,
                 SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
             };
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
         }
 
         protected override void When()

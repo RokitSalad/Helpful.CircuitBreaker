@@ -14,38 +14,95 @@ namespace Helpful.CircuitBreaker
         internal static Func<ISchedulerConfig, IRetryScheduler> SchedulerActivator { get; set; }
 
         private readonly IClosedEvent _closedEventHandler;
-        private readonly CircuitBreakerConfig _config;
         private readonly IOpenedEvent _openedEventHandler;
-        private readonly IRetryScheduler _retryScheduler;
         private readonly ITolleratedOpenEvent _toleratedOpenEventHandler;
         private readonly ITryingToCloseEvent _tryingToCloseEventHandler;
         private readonly IUnregisterBreakerEvent _unregisterEventHandler;
+        private readonly IRegisterBreakerEvent _registerEventHandler;
+
+        private readonly bool _useOldEventing;
         private bool _disposed;
+        private CircuitBreakerConfig _config;
+        private IRetryScheduler _retryScheduler;
 
         private short _toleratedOpenEventCount;
 
         /// <summary>
+        /// Raised when the circuit breaker enters the closed state
+        /// </summary>
+        public event EventHandler<CircuitBreakerEventArgs> ClosedCircuitBreaker;
+
+        /// <summary>
+        /// Raised when the circuit breaker enters the opened state
+        /// </summary>
+        public event EventHandler<OpenedCircuitBreakerEventArgs> OpenedCircuitBreaker;
+
+        /// <summary>
+        /// Raised when trying to close the circuit breaker
+        /// </summary>
+        public event EventHandler<CircuitBreakerEventArgs> TryingToCloseCircuitBreaker;
+
+        /// <summary>
+        /// Raised when the breaker tries to open but remains closed due to tolerance
+        /// </summary>
+        public event EventHandler<ToleratedOpenCircuitBreakerEventArgs> ToleratedOpenCircuitBreaker;
+
+        /// <summary>
+        /// Raised when the circuit breaker is disposed
+        /// </summary>
+        public event EventHandler<CircuitBreakerEventArgs> UnregisterCircuitBreaker;
+
+        /// <summary>
+        /// Raised when a circuit breaker is constructed
+        /// </summary>
+        public event EventHandler<CircuitBreakerEventArgs> RegisterCircuitBreaker;
+
+        /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="eventFactory">The factory for generating event handlers</param>
         /// <param name="config">The config for the breaker</param>
-        public CircuitBreaker(
-            IEventFactory eventFactory,
-            CircuitBreakerConfig config
-            )
+        /// <param name="eventFactory">The factory for generating event handlers</param>
+        [Obsolete("This constructor is now obsolete. Preferred management of events is via classic event handlers. Do not inject an implementation of IEventFactory.")]
+        public CircuitBreaker(CircuitBreakerConfig config, IEventFactory eventFactory)
         {
+            _useOldEventing = true;
             _closedEventHandler = eventFactory.GetClosedEvent();
             _openedEventHandler = eventFactory.GetOpenedEvent();
             _tryingToCloseEventHandler = eventFactory.GetTriedToCloseEvent();
             _toleratedOpenEventHandler = eventFactory.GetTolleratedOpenEvent();
             _unregisterEventHandler = eventFactory.GetUnregisterBreakerEvent();
+            _registerEventHandler = eventFactory.GetRegisterBreakerEvent();
+
+            Initialise(config);
+        }
+
+        /// <summary>
+        /// Constructor without an event factory - the breaker will just raise normal .Net events for you to handle
+        /// </summary>
+        /// <param name="config">The config for the breaker</param>
+        public CircuitBreaker(CircuitBreakerConfig config)
+        {
+            _useOldEventing = false;
+
+            Initialise(config);
+        }
+
+        private void Initialise(CircuitBreakerConfig config)
+        {
             _config = config;
-
+            if (_useOldEventing)
+            {
+                _registerEventHandler.RaiseEvent(config);
+            }
+            if (RegisterCircuitBreaker != null)
+            {
+                RegisterCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
+            }
             _retryScheduler = SchedulerActivator == null
-                                  ? DefaultSchedulerActivator(config.SchedulerConfig)
-                                  : SchedulerActivator(config.SchedulerConfig);
+                ? DefaultSchedulerActivator(config.SchedulerConfig)
+                : SchedulerActivator(config.SchedulerConfig);
 
-            CloseBreaker();
+            CloseCircuitBreaker();
         }
 
         /// <summary>
@@ -92,6 +149,13 @@ namespace Helpful.CircuitBreaker
             }
         }
 
+        /// <summary>
+        /// Executes the specified function in the circuit breaker. The ActionResult of this function determines whether the breaker will try to open.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <exception cref="CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="ArgumentNullException">The value of 'action' cannot be null.</exception>
+        /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
         public void Execute(Func<ActionResult> action)
         {
             if (action == null)
@@ -123,7 +187,7 @@ namespace Helpful.CircuitBreaker
                         throw new ActionResultNotGoodException(_config);
                     }
                 }
-                CloseBreaker();
+                CloseCircuitBreaker();
             }
             catch (CircuitBreakerTimedOutException)
             {
@@ -236,7 +300,7 @@ namespace Helpful.CircuitBreaker
                 throw new CircuitBreakerExecutionErrorException(_config, e);
             }
             if (State == BreakerState.HalfOpen)
-                CloseBreaker();
+                CloseCircuitBreaker();
 
             if(_config.PermittedExceptionPassThrough == PermittedExceptionBehaviour.PassThrough)
                 throw e;
@@ -255,23 +319,55 @@ namespace Helpful.CircuitBreaker
                 {
                     State = BreakerState.Open;
                     _retryScheduler.BeginNextPeriod(DateTime.UtcNow);
-                    _openedEventHandler.RaiseEvent(_config, reason, thrownException);
+                    OnOpenBreaker(reason, thrownException);
                     _toleratedOpenEventCount = 0;
                 }
                 else
                 {
-                    _toleratedOpenEventHandler.RaiseEvent(_toleratedOpenEventCount++, _config, reason, thrownException);
+                    OnToleratedOpenBreaker(_toleratedOpenEventCount++, reason, thrownException);
                 }
             }
         }
 
-        private void CloseBreaker()
+        private void OnToleratedOpenBreaker(short toleratedOpenEventCount, BreakerOpenReason reason, Exception thrownException)
+        {
+            if(_useOldEventing)
+            {
+                _toleratedOpenEventHandler.RaiseEvent(toleratedOpenEventCount, _config, reason, thrownException);
+            }
+            if (ToleratedOpenCircuitBreaker != null)
+            {
+                ToleratedOpenCircuitBreaker(this,
+                    new ToleratedOpenCircuitBreakerEventArgs(_config, reason, thrownException, toleratedOpenEventCount));
+            }
+        }
+
+        private void OnOpenBreaker(BreakerOpenReason reason, Exception thrownException)
+        {
+            if (_useOldEventing)
+            {
+                _openedEventHandler.RaiseEvent(_config, reason, thrownException);
+            }
+            if (OpenedCircuitBreaker != null)
+            {
+                OpenedCircuitBreaker(this, new OpenedCircuitBreakerEventArgs(_config, reason, thrownException));
+            }
+        }
+
+        private void CloseCircuitBreaker()
         {
             if (State != BreakerState.Closed)
             {
                 _retryScheduler.Reset();
                 State = BreakerState.Closed;
-                _closedEventHandler.RaiseEvent(_config);
+                if(_useOldEventing)
+                {
+                    _closedEventHandler.RaiseEvent(_config);
+                }
+                if (ClosedCircuitBreaker != null)
+                {
+                    ClosedCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
+                }
             }
         }
 
@@ -280,7 +376,14 @@ namespace Helpful.CircuitBreaker
             if (State != BreakerState.HalfOpen)
             {
                 State = BreakerState.HalfOpen;
-                _tryingToCloseEventHandler.RaiseEvent(_config);
+                if(_useOldEventing)
+                {
+                    _tryingToCloseEventHandler.RaiseEvent(_config);
+                }
+                if (TryingToCloseCircuitBreaker != null)
+                {
+                    TryingToCloseCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
+                }
             }
         }
 
@@ -294,7 +397,14 @@ namespace Helpful.CircuitBreaker
             if (!_disposed)
             {
                 _disposed = true;
-                _unregisterEventHandler.RaiseEvent(_config);
+                if(_useOldEventing)
+                {
+                    _unregisterEventHandler.RaiseEvent(_config);
+                }
+                if (UnregisterCircuitBreaker != null)
+                {
+                    UnregisterCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
+                }
             }
         }
     }

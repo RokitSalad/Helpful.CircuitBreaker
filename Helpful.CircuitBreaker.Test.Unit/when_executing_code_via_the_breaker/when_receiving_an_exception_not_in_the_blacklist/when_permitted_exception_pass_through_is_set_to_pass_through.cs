@@ -23,7 +23,7 @@ namespace when_executing_code_via_the_breaker.when_receiving_an_exception_not_in
                 SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
             _thrownException = new NullReferenceException();
         }
 

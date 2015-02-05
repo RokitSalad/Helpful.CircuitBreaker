@@ -37,7 +37,7 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
             CircuitBreaker.SchedulerActivator = config => _scheduler.Object;
 
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
             _circuitBreaker.State = BreakerState.Open;
         }
 
