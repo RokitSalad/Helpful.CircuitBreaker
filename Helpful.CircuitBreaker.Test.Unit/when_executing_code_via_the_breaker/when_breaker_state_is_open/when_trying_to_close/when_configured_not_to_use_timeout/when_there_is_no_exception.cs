@@ -31,7 +31,7 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
             CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
 
-            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object) {State = BreakerState.Open};
+            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config) {State = BreakerState.Open};
 
             // need to reset expectations after the constructor has run
             _scheduler.ResetCalls();

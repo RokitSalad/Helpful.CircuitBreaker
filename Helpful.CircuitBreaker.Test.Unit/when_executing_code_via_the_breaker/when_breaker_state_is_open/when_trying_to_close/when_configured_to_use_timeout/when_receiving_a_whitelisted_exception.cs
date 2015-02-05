@@ -32,7 +32,7 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
             CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
 
-            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
+            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _thrownException = new IndexOutOfRangeException();
 
             _circuitBreaker.State = BreakerState.Open;

@@ -60,10 +60,10 @@ namespace Helpful.CircuitBreaker
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="config">The config for the breaker</param>
         /// <param name="eventFactory">The factory for generating event handlers</param>
+        /// <param name="config">The config for the breaker</param>
         [Obsolete("This constructor is now obsolete. Preferred management of events is via classic event handlers. Do not inject an implementation of IEventFactory.")]
-        public CircuitBreaker(CircuitBreakerConfig config, IEventFactory eventFactory)
+        public CircuitBreaker(IEventFactory eventFactory, CircuitBreakerConfig config)
         {
             _useOldEventing = true;
             _closedEventHandler = eventFactory.GetClosedEvent();
@@ -90,19 +90,9 @@ namespace Helpful.CircuitBreaker
         private void Initialise(CircuitBreakerConfig config)
         {
             _config = config;
-            if (_useOldEventing)
-            {
-                _registerEventHandler.RaiseEvent(config);
-            }
-            if (RegisterCircuitBreaker != null)
-            {
-                RegisterCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
-            }
             _retryScheduler = SchedulerActivator == null
                 ? DefaultSchedulerActivator(config.SchedulerConfig)
                 : SchedulerActivator(config.SchedulerConfig);
-
-            CloseCircuitBreaker();
         }
 
         /// <summary>
@@ -161,32 +151,13 @@ namespace Helpful.CircuitBreaker
             if (action == null)
                 throw new ArgumentNullException("action");
 
+            EnsureBreakerRegistered();
+
             HandleOpenBreaker();
+
             try
             {
-                Task<ActionResult> task = new TaskFactory()
-                    .StartNew(action);
-
-                if (_config.UseTimeout)
-                {
-                    bool didComplete = task.Wait(_config.Timeout);
-                    if (!didComplete)
-                    {
-                        throw new CircuitBreakerTimedOutException(_config);
-                    }
-                    if (task.Result != ActionResult.Good)
-                    {
-                        throw new ActionResultNotGoodException(_config);
-                    }
-                }
-                else
-                {
-                    task.Wait();
-                    if (task.Result != ActionResult.Good)
-                    {
-                        throw new ActionResultNotGoodException(_config);
-                    }
-                }
+                ExecuteTheDelegate(action);
                 CloseCircuitBreaker();
             }
             catch (CircuitBreakerTimedOutException)
@@ -240,6 +211,50 @@ namespace Helpful.CircuitBreaker
             T result = default(T);
             Execute(() => { result = function(); });
             return result;
+        }
+
+        private void ExecuteTheDelegate(Func<ActionResult> action)
+        {
+            Task<ActionResult> task = new TaskFactory()
+                .StartNew(action);
+
+            if (_config.UseTimeout)
+            {
+                bool didComplete = task.Wait(_config.Timeout);
+                if (!didComplete)
+                {
+                    throw new CircuitBreakerTimedOutException(_config);
+                }
+                if (task.Result != ActionResult.Good)
+                {
+                    throw new ActionResultNotGoodException(_config);
+                }
+            }
+            else
+            {
+                task.Wait();
+                if (task.Result != ActionResult.Good)
+                {
+                    throw new ActionResultNotGoodException(_config);
+                }
+            }
+        }
+
+        private void EnsureBreakerRegistered()
+        {
+            if (State == BreakerState.Uninitialised)
+            {
+                if (_useOldEventing)
+                {
+                    _registerEventHandler.RaiseEvent(_config);
+                }
+                if (RegisterCircuitBreaker != null)
+                {
+                    RegisterCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
+                }
+
+                CloseCircuitBreaker();
+            }
         }
 
         private void HandleOpenBreaker()

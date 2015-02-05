@@ -31,13 +31,13 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 OpenEventTolerance = 5,
                 UseTimeout = true,
                 Timeout = TimeSpan.FromMilliseconds(100),
-                SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 10}
+                SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 100}
             };
             _scheduler = new Mock<IRetryScheduler>();
             CircuitBreaker.SchedulerActivator = config => _scheduler.Object;
 
             _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
+            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _circuitBreaker.State = BreakerState.Open;
         }
 

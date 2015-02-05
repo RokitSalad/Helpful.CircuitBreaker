@@ -25,7 +25,7 @@ namespace when_executing_code_via_the_breaker.when_returning_an_action_result.wh
                 UseTimeout = true,
                 Timeout = _timeout
             };
-            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
+            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
         }
 
         protected override void When()

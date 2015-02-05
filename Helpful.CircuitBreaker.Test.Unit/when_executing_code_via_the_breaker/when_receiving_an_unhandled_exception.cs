@@ -25,7 +25,7 @@ namespace when_executing_code_via_the_breaker
             {
                 SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
             };
-            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
+            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
         }
 
         protected override void When()

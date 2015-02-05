@@ -28,7 +28,7 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
                 SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = new CircuitBreaker(_config, EventFactory.Object);
+            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _thrownException = new ArgumentNullException();
         }
 

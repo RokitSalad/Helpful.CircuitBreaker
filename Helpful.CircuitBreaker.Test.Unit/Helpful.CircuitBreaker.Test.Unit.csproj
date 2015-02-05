@@ -91,6 +91,9 @@
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_blacklist_within_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_beyond_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_within_tolerance.cs" />
+    <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_an_exception_is_thrown.cs" />
+    <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_trying_to_close_the_breaker.cs" />
+    <Compile Include="when_not_providing_an_event_factory\with_open_event_tolerance\when_an_exception_is_thrown.cs" />
     <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_begining_subsequent_periods.cs" />
     <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_begining_the_first_period.cs" />
     <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_the_allowed_retry_time_has_not_passed.cs" />

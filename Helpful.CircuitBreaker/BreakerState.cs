@@ -6,6 +6,10 @@
     public enum BreakerState
     {
         /// <summary>
+        /// Breaker is uninitialised
+        /// </summary>
+        Uninitialised,
+        /// <summary>
         /// Breaker is open
         /// </summary>
         Open,
