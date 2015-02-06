@@ -53,7 +53,7 @@ namespace Helpful.CircuitBreaker
         public event EventHandler<CircuitBreakerEventArgs> UnregisterCircuitBreaker;
 
         /// <summary>
-        /// Raised when a circuit breaker is constructed
+        /// Raised when a circuit breaker is first used
         /// </summary>
         public event EventHandler<CircuitBreakerEventArgs> RegisterCircuitBreaker;
 
