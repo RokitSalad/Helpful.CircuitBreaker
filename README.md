@@ -7,65 +7,119 @@ Install-Package Helpful.CircuitBreaker
 ```
 
 ## Quick Start ##
+The following code will initialise a basic circuit breaker which once open will not try to close until 1 minute has passed.
 ```c#
-CircuitBreakerFactory circuitBreakerFactory = new CircuitBreakerFactory(new MyEventFactory());
-```
-Creates a new instance of the circuit breaker factory with your own implementation of the event factory.
-Or use one of the prebuilt ones available here:
- - [Azure Queue Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureQueue)
- - [Azure WAD Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.AzureWad)
- - [Eventstore Event Factory](https://github.com/RokitSalad/Helpful.CircuitBreaker.Events.EventStore)
-
-The CircuitBreakerFactory is used to register and retrieve instances of the circuit breaker. 
-You should use at least one circuit breaker per type and give it a BreakerId releated to the type of the circuit that is being circuit broken and the environment it is being run in.
-
-```c#
-var circuitBreakerConfig = new CircuitBreakerConfig
+CircuitBreakerConfig config = new CircuitBreakerConfig
 {
-	//The Breaker ID
-	BreakerId = "CircuitBreaker-Test",
-	
-	//The Scheduler config and strategy 
-	//Fixed 
-	SchedulerConfig = new FixedRetrySchedulerConfig
-	{
-		RetryPeriodInSeconds = 10
-	},
-	//or Sequential Retry
-	SchedulerConfig = new SequentialRetrySchedulerConfig
-	{
-		RetrySequenceSeconds = new[] { 10, 20, 30 }
-	},
-	// Or Implement your own 
-	
-	// (Optional) ExceptionListType.BlackList Always open breaker on these exceptions 
-	//or ExceptionListType.WhiteList ignore / catch these exceptions 
-	ExpectedExceptionListType = ExceptionListType.BlackList,
-
-	// (Optional) The Exception List 
-	ExpectedExceptionList = new List<Type> { typeof(HttpException) },
-
-	//(Optional Defaults to 0) The number of times an error can occur before the circuit breaker is opened
-	OpenEventTolerance = 3,
-
-	// (Optional) Timeout operations in the circuit breaker and open the circuit
-	UseTimeout = false,
-
-	// (Optional) The timeout timespan 
-	Timeout = TimeSpan.FromSeconds(10),
+    BreakerId = "Some unique and constant identifier that indicates the running instance and executing process"
+    SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 60 }
 };
-//Register circuit breaker with id "CircuitBreaker-Test"  Also returns the circuit breaker if required
-CircuitBreaker cb = circuitBreakerFactory.RegisterBreaker(circuitBreakerConfig);
-
-//Get circuit breaker with id "CircuitBreaker-Test"
-CircuitBreaker cb = circuitBreakerFactory.GetBreaker("CircuitBreaker-Test");
-
-//Execute Actions within the breaker
-cb.Execute(() => Console.WriteLine("Inside Circuit Breaker"));
-
-// Return from functions within the breaker
-string result = cb.Execute(() => "Return result from inside Circuit Breaker");
-
-//Read current state
-Console.WriteLine(cb.State);
+CircuitBreaker circuitBreaker = new CircuitBreaker(config);
 ```
+
+To inject a circuit breaker using Ninject, use code similar to this:
+```c#
+Bind<ICircuitBreaker>().To<CircuitBreaker>();
+Bind<CircuitBreakerConfig>().ToMethod(c => new CircuitBreakerConfig
+{
+    BreakerId = string.Format("{0}-{1}", Environment.MachineName, "Your breaker name"),
+    SchedulerConfig = new FixedRetrySchedulerConfig
+    {
+        RetryPeriodInSeconds = 60
+    }
+});
+```
+
+## Usage ##
+There are 2 primary ways that the circuit breaker can be used:
+<ol>
+    <li>Exceptions thrown from the code you wish to break on can trigger the breaker to open.</li>
+    <li>A returned value from the code you wish to break on can trigger the breaker to open.</li>
+</ol>
+
+Here are some basic examples of each scenario.
+
+In the following example, exceptions thrown from _client.Send(request) will cause the circuit breaker to react based on the injected configuration.
+```c#
+public class MakeProtectedCall
+{
+    private ICircuitBreaker _breaker;
+    private ISomeServiceClient _client;
+
+    public MakeProtectedCall(ICircuitBreaker breaker, ISomeServiceClient client)
+    {
+        _breaker = breaker;
+        _client = client;
+    }
+
+    public Response ExecuteCall(Request request)
+    {
+    	Response response = null;
+        _breaker.Execute(() => response = _client.Send(request));
+        return response;
+    }
+}
+```
+
+In the following example, exceptions thrown by _client.Send(request) will still trigger the exception handling logic of the breaker, but the lamda applies additional logic to examine the response and trigger the breaker without ever receiving an exception. This is particularly useful when using an HTTP based client that may return failures as error codes and strings instead of thrown exceptions.
+```c#
+public class MakeProtectedCall
+{
+    private ICircuitBreaker _breaker;
+    private ISomeServiceClient _client;
+
+    public MakeProtectedCall(ICircuitBreaker breaker, ISomeServiceClient client)
+    {
+        _breaker = breaker;
+        _client = client;
+    }
+
+    public Response ExecuteCall(Request request)
+    {
+    	Response response = null;
+        _breaker.Execute(() => {
+        	response = _client.Send(request));
+        	return response.Status == "OK" ? ActionResponse.Good : ActionResult.Failure;
+        }
+        return response;
+    }
+}
+```
+
+## Tracking Circuit Breaker State ##
+
+The suggested method for tracking the state of the circuit breaker is to handle the breaker events. These are defined on the CircuitBreaker class as:
+```c#
+/// <summary>
+/// Raised when the circuit breaker enters the closed state
+/// </summary>
+public event EventHandler<CircuitBreakerEventArgs> ClosedCircuitBreaker;
+
+/// <summary>
+/// Raised when the circuit breaker enters the opened state
+/// </summary>
+public event EventHandler<OpenedCircuitBreakerEventArgs> OpenedCircuitBreaker;
+
+/// <summary>
+/// Raised when trying to close the circuit breaker
+/// </summary>
+public event EventHandler<CircuitBreakerEventArgs> TryingToCloseCircuitBreaker;
+
+/// <summary>
+/// Raised when the breaker tries to open but remains closed due to tolerance
+/// </summary>
+public event EventHandler<ToleratedOpenCircuitBreakerEventArgs> ToleratedOpenCircuitBreaker;
+
+/// <summary>
+/// Raised when the circuit breaker is disposed
+/// </summary>
+public event EventHandler<CircuitBreakerEventArgs> UnregisterCircuitBreaker;
+
+/// <summary>
+/// Raised when a circuit breaker is constructed
+/// </summary>
+public event EventHandler<CircuitBreakerEventArgs> RegisterCircuitBreaker;
+```
+
+Attach handlers to these events to send information about the event to a logging or monitoring system. In this way, sending state to Zabbix or logging to log4net is trivial.
+
