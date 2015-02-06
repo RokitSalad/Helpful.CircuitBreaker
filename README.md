@@ -17,18 +17,18 @@ CircuitBreakerConfig config = new CircuitBreakerConfig
 CircuitBreaker circuitBreaker = new CircuitBreaker(config);
 ```
 
-To inject a circuit breaker using Ninject, use code similar to this:
+To inject a circuit breaker into class TargetClass using Ninject, try code similar to this:
 ```c#
-Bind<ICircuitBreaker>().To<CircuitBreaker>();
-Bind<CircuitBreakerConfig>().ToMethod(c => new CircuitBreakerConfig
+Bind<ICircuitBreaker>().ToMethod(c => new CircuitBreaker(new CircuitBreakerConfig
 {
-    BreakerId = string.Format("{0}-{1}", Environment.MachineName, "Your breaker name"),
+    BreakerId = string.Format("{0}-{1}-{2}", "Your breaker name", "TargetClass", Environment.MachineName),
     SchedulerConfig = new FixedRetrySchedulerConfig
     {
         RetryPeriodInSeconds = 60
     }
-});
+})).WhenInjectedInto(typeof(TargetClass)).InSingletonScope();
 ```
+The above code will reuse the same breaker for all instances of the given class, so the breaker continues to report state continuously across different threads. When opened by one use, all instances of TargetClass will have an open breaker.
 
 ## Usage ##
 There are 2 primary ways that the circuit breaker can be used:
