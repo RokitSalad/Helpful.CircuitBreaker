@@ -22,7 +22,7 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
         {
             base.Given();
             _caughtExceptions = new List<Exception>();
-            _config = new CircuitBreakerConfig { ExpectedExceptionListType = ExceptionListType.BlackList,SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}};
+            _config = new CircuitBreakerConfig {ExpectedExceptionListType = ExceptionListType.BlackList};
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _thrownException = new NullReferenceException();

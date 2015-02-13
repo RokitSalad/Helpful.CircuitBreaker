@@ -21,10 +21,7 @@ namespace when_executing_code_via_the_breaker
         {
             base.Given();
             _thrownException = new ArgumentNullException();
-            _config = new CircuitBreakerConfig
-            {
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
-            };
+            _config = new CircuitBreakerConfig();
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
         }
 

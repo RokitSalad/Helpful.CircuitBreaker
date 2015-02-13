@@ -20,8 +20,7 @@ namespace when_executing_code_via_the_breaker
             base.Given();
             _config = new CircuitBreakerConfig
             {
-                ExpectedExceptionListType = ExceptionListType.BlackList,
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+                ExpectedExceptionListType = ExceptionListType.BlackList
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
 

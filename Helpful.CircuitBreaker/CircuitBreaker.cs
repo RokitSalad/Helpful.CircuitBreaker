@@ -9,10 +9,8 @@ namespace Helpful.CircuitBreaker
 {
     /// <summary>
     /// </summary>
-    public class CircuitBreaker : ICircuitBreaker, IDisposable
+    public class CircuitBreaker : ICircuitBreaker
     {
-        internal static Func<ISchedulerConfig, IRetryScheduler> SchedulerActivator { get; set; }
-
         private readonly IClosedEvent _closedEventHandler;
         private readonly IOpenedEvent _openedEventHandler;
         private readonly ITolleratedOpenEvent _toleratedOpenEventHandler;
@@ -23,7 +21,8 @@ namespace Helpful.CircuitBreaker
         private readonly bool _useOldEventing;
         private bool _disposed;
         private CircuitBreakerConfig _config;
-        private IRetryScheduler _retryScheduler;
+        private int _openPeriodIndex;
+        private DateTime _openedTime;
 
         private short _toleratedOpenEventCount;
 
@@ -56,6 +55,11 @@ namespace Helpful.CircuitBreaker
         /// Raised when a circuit breaker is first used
         /// </summary>
         public event EventHandler<CircuitBreakerEventArgs> RegisterCircuitBreaker;
+
+        private bool CanTryToCloseBreaker
+        {
+            get { return _openedTime + _config.BreakerOpenPeriods[_openPeriodIndex] <= DateTime.UtcNow; }
+        }
 
         /// <summary>
         /// Constructor
@@ -90,9 +94,6 @@ namespace Helpful.CircuitBreaker
         private void Initialise(CircuitBreakerConfig config)
         {
             _config = config;
-            _retryScheduler = SchedulerActivator == null
-                ? DefaultSchedulerActivator(config.SchedulerConfig)
-                : SchedulerActivator(config.SchedulerConfig);
         }
 
         /// <summary>
@@ -117,26 +118,6 @@ namespace Helpful.CircuitBreaker
         internal CircuitBreakerConfig Config
         {
             get { return _config; }
-        }
-
-        private IRetryScheduler DefaultSchedulerActivator(ISchedulerConfig schedulerConfig)
-        {
-            try
-            {
-                Type implementationOfIRetryScheduler = schedulerConfig.ImplementationOfIRetryScheduler;
-
-                if (!typeof (IRetryScheduler).IsAssignableFrom(implementationOfIRetryScheduler))
-                {
-                    throw new ArgumentException("ImplementationOfIRetryScheduler does not implement IRetryScheduler");                    
-                }
-                var retryScheduler = Activator.CreateInstance(implementationOfIRetryScheduler, schedulerConfig) ;
-                return retryScheduler as IRetryScheduler;
-            }
-            catch (Exception exception)
-            {
-                throw new ArgumentException("Invalid Retry scheduler specified in scheduler config", "schedulerConfig",
-                    exception);
-            }
         }
 
         /// <summary>
@@ -195,24 +176,6 @@ namespace Helpful.CircuitBreaker
             });
         }
 
-        /// <summary>
-        ///     Executes the specified function inside the circuit breaker
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="function">The function.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">The value of 'function' cannot be null. </exception>
-        /// <exception cref="CircuitBreakerTimedOutException">The action timed out </exception>
-        /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
-        public T Execute<T>(Func<T> function)
-        {
-            if (function == null)
-                throw new ArgumentNullException("function");
-            T result = default(T);
-            Execute(() => { result = function(); });
-            return result;
-        }
-
         private void ExecuteTheDelegate(Func<ActionResult> action)
         {
             Task<ActionResult> task = new TaskFactory()
@@ -261,7 +224,7 @@ namespace Helpful.CircuitBreaker
         {
             if (State == BreakerState.Open)
             {
-                if (_retryScheduler.AllowRetry)
+                if (CanTryToCloseBreaker)
                 {
                     TryToCloseBreaker();
                 }
@@ -330,10 +293,14 @@ namespace Helpful.CircuitBreaker
         {
             if (State != BreakerState.Open)
             {
+                if (State == BreakerState.HalfOpen)
+                {
+                    SafeIncrementOpenPeriodIndex();
+                }
                 if (State == BreakerState.HalfOpen || _toleratedOpenEventCount >= _config.OpenEventTolerance)
                 {
                     State = BreakerState.Open;
-                    _retryScheduler.BeginNextPeriod(DateTime.UtcNow);
+                    _openedTime = DateTime.UtcNow;
                     OnOpenBreaker(reason, thrownException);
                     _toleratedOpenEventCount = 0;
                 }
@@ -342,6 +309,13 @@ namespace Helpful.CircuitBreaker
                     OnToleratedOpenBreaker(_toleratedOpenEventCount++, reason, thrownException);
                 }
             }
+        }
+
+        private void SafeIncrementOpenPeriodIndex()
+        {
+            _openPeriodIndex = _openPeriodIndex == _config.BreakerOpenPeriods.Length - 1
+                ? _openPeriodIndex
+                : _openPeriodIndex + 1;
         }
 
         private void OnToleratedOpenBreaker(short toleratedOpenEventCount, BreakerOpenReason reason, Exception thrownException)
@@ -373,7 +347,7 @@ namespace Helpful.CircuitBreaker
         {
             if (State != BreakerState.Closed)
             {
-                _retryScheduler.Reset();
+                _openPeriodIndex = 0;
                 State = BreakerState.Closed;
                 if(_useOldEventing)
                 {

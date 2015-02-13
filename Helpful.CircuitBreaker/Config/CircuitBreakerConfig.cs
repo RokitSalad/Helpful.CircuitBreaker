@@ -18,6 +18,7 @@ namespace Helpful.CircuitBreaker.Config
             ExpectedExceptionList = new List<Type>();
             ExpectedExceptionListType = ExceptionListType.None;
             PermittedExceptionPassThrough = PermittedExceptionBehaviour.PassThrough;
+            BreakerOpenPeriods = new[] { TimeSpan.FromSeconds(60) };
         }
 
         /// <summary>
@@ -29,12 +30,14 @@ namespace Helpful.CircuitBreaker.Config
         public short OpenEventTolerance { get; set; }
 
         /// <summary>
-        /// Gets or sets the scheduler configuration.
+        /// Gets or sets the list of periods the breaker should be kept open. 
+        /// The last value will be what is repeated until the breaker is successfully closed.
+        /// If not set, a default of 60 seconds will be used for all breaker open periods.
         /// </summary>
         /// <value>
-        /// The scheduler configuration.
+        /// The array of timespans representing the breaker open periods.
         /// </value>
-        public ISchedulerConfig SchedulerConfig { get; set; }
+        public TimeSpan[] BreakerOpenPeriods { get; set; }
 
         /// <summary>
         /// Gets or sets the expected type of the exception list. <see cref="ExceptionListType"/>

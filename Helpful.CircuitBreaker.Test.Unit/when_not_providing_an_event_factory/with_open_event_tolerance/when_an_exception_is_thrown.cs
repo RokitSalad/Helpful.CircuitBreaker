@@ -18,8 +18,7 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_not_providing_an_event_factory.w
             base.Given();
             _config = new CircuitBreakerConfig
             {
-                OpenEventTolerance = 3,
-                SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 10 }
+                OpenEventTolerance = 3
             };
             _circuitBreaker = new CircuitBreaker(_config);
             _circuitBreaker.ToleratedOpenCircuitBreaker += (sender, args) => _breakerOpenEventTolerated = true;

@@ -1,18 +1,11 @@
 ﻿using Helpful.BDD;
 using Helpful.CircuitBreaker.Events;
 using Moq;
-using NUnit.Framework;
 
 namespace Helpful.CircuitBreaker.Test.Unit
 {
     abstract class using_a_mocked_event_factory : TestBase
     {
-        [TearDown]
-        public void TearDown()
-        {
-            CircuitBreaker.SchedulerActivator = null;
-        }
-
         protected Mock<IEventFactory> EventFactory { get; private set; }
         protected Mock<IClosedEvent> ClosedEvent { get; private set; }
         protected Mock<IOpenedEvent> OpenedEvent { get; private set; }

@@ -94,16 +94,6 @@
     <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_an_exception_is_thrown.cs" />
     <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_trying_to_close_the_breaker.cs" />
     <Compile Include="when_not_providing_an_event_factory\with_open_event_tolerance\when_an_exception_is_thrown.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_begining_subsequent_periods.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_begining_the_first_period.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_the_allowed_retry_time_has_not_passed.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_fixed_scheduler\when_the_allowed_retry_time_has_passed.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_the_allowed_retry_time_has_not_passed.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_the_allowed_retry_time_has_passed.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_beginning_the_sequence.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_resetting.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_seeding_next_period.cs" />
-    <Compile Include="when_scheduling_retries\when_using_the_sequential_scheduler\when_reaching_then_end_of_the_sequence.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -114,7 +104,9 @@
       <Name>Helpful.CircuitBreaker</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="when_scheduling_retries\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

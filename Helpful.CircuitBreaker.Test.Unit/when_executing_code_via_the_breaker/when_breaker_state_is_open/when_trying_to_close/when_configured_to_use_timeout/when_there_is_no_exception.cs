@@ -13,7 +13,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
-        private Mock<IRetryScheduler> _scheduler;
         private Exception _caughtException;
 
         protected override void Given()
@@ -26,16 +25,10 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 OpenEventTolerance = 5,
             };
             
-            _scheduler = new Mock<IRetryScheduler>();
-            _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
-
-
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _circuitBreaker.State = BreakerState.Open;
 
             // need to reset expectations after the constructor has run
-            _scheduler.ResetCalls();
             ClosedEvent.ResetCalls();
         }
 
@@ -67,12 +60,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         public void no_exception_should_be_thrown()
         {
             Assert.That(_caughtException, Is.Null);
-        }
-
-        [Then]
-        public void the_retry_scheduler_should_be_reset()
-        {
-            _scheduler.Verify(s => s.Reset(), Times.Once);
         }
     }
 }

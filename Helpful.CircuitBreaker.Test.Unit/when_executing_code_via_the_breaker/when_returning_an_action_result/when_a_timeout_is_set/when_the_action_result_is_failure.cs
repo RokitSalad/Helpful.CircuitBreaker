@@ -21,7 +21,6 @@ namespace when_executing_code_via_the_breaker.when_returning_an_action_result.wh
             _timeout = TimeSpan.FromSeconds(10);
             _config = new CircuitBreakerConfig
             {
-                SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 10 },
                 UseTimeout = true,
                 Timeout = _timeout
             };

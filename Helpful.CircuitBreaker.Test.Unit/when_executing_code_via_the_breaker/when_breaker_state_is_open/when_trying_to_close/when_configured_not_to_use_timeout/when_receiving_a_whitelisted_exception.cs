@@ -13,7 +13,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
-        private Mock<IRetryScheduler> _scheduler;
         private Exception _caughtException;
         private Exception _thrownException;
 
@@ -26,9 +25,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 ExpectedExceptionList = new List<Type> { typeof (IndexOutOfRangeException) },
                 OpenEventTolerance = 5,
             };
-            _scheduler = new Mock<IRetryScheduler>();
-            _scheduler.Setup(s => s.AllowRetry).Returns(true);
-            CircuitBreaker.SchedulerActivator = c => _scheduler.Object;
 
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _thrownException = new IndexOutOfRangeException();
@@ -36,7 +32,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
             _circuitBreaker.State = BreakerState.Open;
 
             // need to reset expectations after the constructor has run
-            _scheduler.ResetCalls();
             ClosedEvent.ResetCalls();
         }
 
@@ -74,12 +69,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         public void the_exception_should_be_the_thrown_exception()
         {
             Assert.That(_caughtException, Is.EqualTo(_thrownException));
-        }
-
-        [Then]
-        public void the_retry_scheduler_should_be_reset()
-        {
-            _scheduler.Verify(s => s.Reset(), Times.Once);
         }
     }
 }

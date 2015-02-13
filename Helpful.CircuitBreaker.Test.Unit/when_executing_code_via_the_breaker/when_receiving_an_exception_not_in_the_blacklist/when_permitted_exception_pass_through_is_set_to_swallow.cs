@@ -20,7 +20,6 @@ namespace when_executing_code_via_the_breaker.when_receiving_an_exception_not_in
             _config = new CircuitBreakerConfig
             {
                 ExpectedExceptionListType = ExceptionListType.BlackList,
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10},
                 PermittedExceptionPassThrough = PermittedExceptionBehaviour.Swallow
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));

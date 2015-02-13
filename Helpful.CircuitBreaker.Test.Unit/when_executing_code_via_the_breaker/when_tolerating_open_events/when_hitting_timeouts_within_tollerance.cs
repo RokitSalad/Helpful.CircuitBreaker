@@ -28,8 +28,7 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
                 {
                     UseTimeout = true,
                     Timeout = _timeout,
-                    OpenEventTolerance = 2,
-                    SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 10}
+                    OpenEventTolerance = 2
                 };
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
         }

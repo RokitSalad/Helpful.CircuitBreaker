@@ -16,7 +16,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
-        private Mock<IRetryScheduler> _scheduler;
         private Exception _caughtException;
 
 
@@ -30,13 +29,9 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 ExpectedExceptionList = new List<Type> { typeof (IndexOutOfRangeException) },
                 OpenEventTolerance = 5,
                 UseTimeout = true,
-                Timeout = TimeSpan.FromMilliseconds(100),
-                SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 100}
+                Timeout = TimeSpan.FromMilliseconds(100)
             };
-            _scheduler = new Mock<IRetryScheduler>();
-            CircuitBreaker.SchedulerActivator = config => _scheduler.Object;
 
-            _scheduler.Setup(s => s.AllowRetry).Returns(true);
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _circuitBreaker.State = BreakerState.Open;
         }
@@ -88,12 +83,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         public void the_exception_should_be_specifically_a_timeout_exception()
         {
             Assert.That(_caughtException, Is.AssignableTo<CircuitBreakerTimedOutException>());
-        }
- 
-        [Then]
-        public void the_retry_scheduler_should_begin_again()
-        {
-            _scheduler.Verify(s => s.BeginNextPeriod(It.IsAny<DateTime>()), Times.Once);
         }
     }
 }

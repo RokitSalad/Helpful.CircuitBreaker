@@ -23,10 +23,7 @@ namespace when_not_providing_an_event_factory.with_no_open_tolerance
         protected override void Given()
         {
             base.Given();
-            _config = new CircuitBreakerConfig
-            {
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
-            };
+            _config = new CircuitBreakerConfig();
             _circuitBreaker = new CircuitBreaker(_config);
             _circuitBreaker.RegisterCircuitBreaker += (sender, args) => _breakerRegistered = true;
             _circuitBreaker.ClosedCircuitBreaker += (sender, args) => _breakerClosed = true;

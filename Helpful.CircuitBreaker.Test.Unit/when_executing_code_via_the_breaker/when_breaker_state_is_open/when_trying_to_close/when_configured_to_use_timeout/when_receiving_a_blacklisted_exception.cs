@@ -15,7 +15,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
-        private Mock<IRetryScheduler> _scheduler;
         private Exception _caughtException;
         private Exception _thrownException;
 
@@ -30,9 +29,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 UseTimeout = true,
                 Timeout = TimeSpan.FromSeconds(10),
             };
-            _scheduler = new Mock<IRetryScheduler>();
-            _scheduler.SetupGet(x => x.AllowRetry).Returns(true);
-            CircuitBreaker.SchedulerActivator = config => _scheduler.Object;
 
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
             _thrownException = new IndexOutOfRangeException();
@@ -92,12 +88,6 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         public void the_inner_exception_should_be_the_thrown_exception()
         {
             Assert.That(_caughtException.InnerException, Is.InstanceOf(typeof(IndexOutOfRangeException)));
-        }
-
-        [Then]
-        public void the_retry_scheduler_should_begin_again()
-        {
-            _scheduler.Verify(s => s.BeginNextPeriod(It.IsAny<DateTime>()), Times.Once);
         }
     }
 }

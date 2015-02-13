@@ -19,8 +19,7 @@ namespace when_executing_code_via_the_breaker.when_receiving_an_exception_not_in
             base.Given();
             _config = new CircuitBreakerConfig
             {
-                ExpectedExceptionListType = ExceptionListType.BlackList,
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+                ExpectedExceptionListType = ExceptionListType.BlackList
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);

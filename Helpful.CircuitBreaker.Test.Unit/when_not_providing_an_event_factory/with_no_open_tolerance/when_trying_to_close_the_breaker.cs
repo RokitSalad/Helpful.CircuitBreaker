@@ -15,10 +15,7 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_not_providing_an_event_factory.w
         protected override void Given()
         {
             base.Given();
-            _config = new CircuitBreakerConfig
-            {
-                SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 0 }
-            };
+            _config = new CircuitBreakerConfig();
             _circuitBreaker = new CircuitBreaker(_config);
             _circuitBreaker.TryingToCloseCircuitBreaker += (sender, args) => _breakerTryingToClose = true;
             _circuitBreaker.State = BreakerState.Open;

@@ -23,8 +23,7 @@ namespace when_executing_code_via_the_breaker
             _config = new CircuitBreakerConfig
             {
                 UseTimeout = true,
-                Timeout = _timeout,
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+                Timeout = _timeout
             };
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
         }

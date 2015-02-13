@@ -25,8 +25,7 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
             _config = new CircuitBreakerConfig
             {
                 ExpectedExceptionListType = ExceptionListType.BlackList,
-                OpenEventTolerance = 2,
-                SchedulerConfig = new FixedRetrySchedulerConfig {RetryPeriodInSeconds = 10}
+                OpenEventTolerance = 2
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
             _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
