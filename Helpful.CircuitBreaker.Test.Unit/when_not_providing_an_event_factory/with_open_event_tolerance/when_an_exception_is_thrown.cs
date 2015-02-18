@@ -1,9 +1,10 @@
 ﻿using System;
 using Helpful.BDD;
+using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
 using NUnit.Framework;
 
-namespace Helpful.CircuitBreaker.Test.Unit.when_not_providing_an_event_factory.with_open_event_tolerance
+namespace when_not_providing_an_event_factory.with_open_event_tolerance
 {
     class when_an_exception_is_thrown : TestBase
     {

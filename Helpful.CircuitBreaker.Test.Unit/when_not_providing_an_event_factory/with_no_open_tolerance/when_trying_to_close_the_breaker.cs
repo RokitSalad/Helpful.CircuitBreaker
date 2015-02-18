@@ -1,9 +1,10 @@
 ﻿using System;
 using Helpful.BDD;
+using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
 using NUnit.Framework;
 
-namespace Helpful.CircuitBreaker.Test.Unit.when_not_providing_an_event_factory.with_no_open_tolerance
+namespace when_not_providing_an_event_factory.with_no_open_tolerance
 {
     class when_trying_to_close_the_breaker : TestBase
     {

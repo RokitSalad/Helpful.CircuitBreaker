@@ -94,6 +94,9 @@
     <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_an_exception_is_thrown.cs" />
     <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_trying_to_close_the_breaker.cs" />
     <Compile Include="when_not_providing_an_event_factory\with_open_event_tolerance\when_an_exception_is_thrown.cs" />
+    <Compile Include="when_scheduling_retries\when_there_are_a_series_of_open_periods\with_several_errors.cs" />
+    <Compile Include="when_scheduling_retries\when_there_is_a_single_open_period\when_there_is_a_single_open_period.cs" />
+    <Compile Include="when_scheduling_retries\when_there_is_a_single_open_period\with_several_errors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -104,9 +107,7 @@
       <Name>Helpful.CircuitBreaker</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="when_scheduling_retries\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
