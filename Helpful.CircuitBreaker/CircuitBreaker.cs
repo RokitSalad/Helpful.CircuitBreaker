@@ -11,19 +11,11 @@ namespace Helpful.CircuitBreaker
     /// </summary>
     public class CircuitBreaker : ICircuitBreaker
     {
-        private readonly IClosedEvent _closedEventHandler;
-        private readonly IOpenedEvent _openedEventHandler;
-        private readonly ITolleratedOpenEvent _toleratedOpenEventHandler;
-        private readonly ITryingToCloseEvent _tryingToCloseEventHandler;
-        private readonly IUnregisterBreakerEvent _unregisterEventHandler;
-        private readonly IRegisterBreakerEvent _registerEventHandler;
+        private readonly CircuitBreakerConfig _config;
 
-        private readonly bool _useOldEventing;
         private bool _disposed;
-        private CircuitBreakerConfig _config;
         private int _openPeriodIndex;
         private DateTime _openedTime;
-
         private short _toleratedOpenEventCount;
 
         /// <summary>
@@ -62,36 +54,10 @@ namespace Helpful.CircuitBreaker
         }
 
         /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="eventFactory">The factory for generating event handlers</param>
-        /// <param name="config">The config for the breaker</param>
-        [Obsolete("This constructor is now obsolete. Preferred management of events is via classic event handlers. Do not inject an implementation of IEventFactory.")]
-        public CircuitBreaker(IEventFactory eventFactory, CircuitBreakerConfig config)
-        {
-            _useOldEventing = true;
-            _closedEventHandler = eventFactory.GetClosedEvent();
-            _openedEventHandler = eventFactory.GetOpenedEvent();
-            _tryingToCloseEventHandler = eventFactory.GetTriedToCloseEvent();
-            _toleratedOpenEventHandler = eventFactory.GetTolleratedOpenEvent();
-            _unregisterEventHandler = eventFactory.GetUnregisterBreakerEvent();
-            _registerEventHandler = eventFactory.GetRegisterBreakerEvent();
-
-            Initialise(config);
-        }
-
-        /// <summary>
         /// Constructor without an event factory - the breaker will just raise normal .Net events for you to handle
         /// </summary>
         /// <param name="config">The config for the breaker</param>
         public CircuitBreaker(CircuitBreakerConfig config)
-        {
-            _useOldEventing = false;
-
-            Initialise(config);
-        }
-
-        private void Initialise(CircuitBreakerConfig config)
         {
             _config = config;
         }
@@ -207,10 +173,6 @@ namespace Helpful.CircuitBreaker
         {
             if (State == BreakerState.Uninitialised)
             {
-                if (_useOldEventing)
-                {
-                    _registerEventHandler.RaiseEvent(_config);
-                }
                 if (RegisterCircuitBreaker != null)
                 {
                     RegisterCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
@@ -320,10 +282,6 @@ namespace Helpful.CircuitBreaker
 
         private void OnToleratedOpenBreaker(short toleratedOpenEventCount, BreakerOpenReason reason, Exception thrownException)
         {
-            if(_useOldEventing)
-            {
-                _toleratedOpenEventHandler.RaiseEvent(toleratedOpenEventCount, _config, reason, thrownException);
-            }
             if (ToleratedOpenCircuitBreaker != null)
             {
                 ToleratedOpenCircuitBreaker(this,
@@ -333,10 +291,6 @@ namespace Helpful.CircuitBreaker
 
         private void OnOpenBreaker(BreakerOpenReason reason, Exception thrownException)
         {
-            if (_useOldEventing)
-            {
-                _openedEventHandler.RaiseEvent(_config, reason, thrownException);
-            }
             if (OpenedCircuitBreaker != null)
             {
                 OpenedCircuitBreaker(this, new OpenedCircuitBreakerEventArgs(_config, reason, thrownException));
@@ -349,10 +303,6 @@ namespace Helpful.CircuitBreaker
             {
                 _openPeriodIndex = 0;
                 State = BreakerState.Closed;
-                if(_useOldEventing)
-                {
-                    _closedEventHandler.RaiseEvent(_config);
-                }
                 if (ClosedCircuitBreaker != null)
                 {
                     ClosedCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
@@ -365,10 +315,6 @@ namespace Helpful.CircuitBreaker
             if (State != BreakerState.HalfOpen)
             {
                 State = BreakerState.HalfOpen;
-                if(_useOldEventing)
-                {
-                    _tryingToCloseEventHandler.RaiseEvent(_config);
-                }
                 if (TryingToCloseCircuitBreaker != null)
                 {
                     TryingToCloseCircuitBreaker(this, new CircuitBreakerEventArgs(_config));
@@ -386,10 +332,6 @@ namespace Helpful.CircuitBreaker
             if (!_disposed)
             {
                 _disposed = true;
-                if(_useOldEventing)
-                {
-                    _unregisterEventHandler.RaiseEvent(_config);
-                }
                 if (UnregisterCircuitBreaker != null)
                 {
                     UnregisterCircuitBreaker(this, new CircuitBreakerEventArgs(_config));

@@ -1,16 +1,13 @@
-﻿
-
-using System;
+﻿using System;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker
 {
-    class when_receiving_an_unhandled_exception : using_a_mocked_event_factory
+    class when_receiving_an_unhandled_exception : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
@@ -22,7 +19,7 @@ namespace when_executing_code_via_the_breaker
             base.Given();
             _thrownException = new ArgumentNullException();
             _config = new CircuitBreakerConfig();
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
         }
 
         protected override void When()

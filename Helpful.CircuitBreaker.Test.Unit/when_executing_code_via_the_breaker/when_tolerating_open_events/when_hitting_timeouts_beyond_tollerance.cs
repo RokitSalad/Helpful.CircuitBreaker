@@ -1,23 +1,21 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_tolerating_open_events
 {
-    class when_hitting_timeouts_beyond_tolerance : using_a_mocked_event_factory
+    class when_hitting_timeouts_beyond_tolerance : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private List<Exception> _caughtExceptions;
+        private bool _openedEventFired;
+        private int _toleratedOpenedCount;
 
         protected override void Given()
         {
@@ -30,7 +28,9 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
                 OpenEventTolerance = 2
             };
 
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
+            _circuitBreaker.OpenedCircuitBreaker += (sender, args) => _openedEventFired = true;
+            _circuitBreaker.ToleratedOpenCircuitBreaker += (sender, args) => _toleratedOpenedCount++;
         }
 
         protected override void When()
@@ -82,13 +82,13 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
         [Then]
         public void an_open_event_should_be_raised()
         {
-            OpenedEvent.Verify(e => e.RaiseEvent(_config, BreakerOpenReason.Timeout, It.IsAny<Exception>()));
+            Assert.That(_openedEventFired, Is.True);
         }
 
         [Then]
         public void two_tolerated_open_events_should_be_raised()
         {
-            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, BreakerOpenReason.Timeout, It.IsAny<Exception>()), Times.Exactly(2));
+            Assert.That(_toleratedOpenedCount, Is.EqualTo(2));
         }
     }
 }

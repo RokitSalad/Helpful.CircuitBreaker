@@ -2,12 +2,11 @@
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_receiving_an_exception_in_the_whitelist
 {
-    class when_permitted_exception_pass_through_is_set_to_swallow : using_a_mocked_event_factory
+    class when_permitted_exception_pass_through_is_set_to_swallow : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
@@ -24,7 +23,7 @@ namespace when_executing_code_via_the_breaker.when_receiving_an_exception_in_the
             };
 
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
             _thrownException = new ArgumentNullException();
         }
 

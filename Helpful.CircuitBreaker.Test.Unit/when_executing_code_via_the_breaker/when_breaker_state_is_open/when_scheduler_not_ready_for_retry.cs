@@ -3,24 +3,23 @@ using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_breaker_state_is_open
 {
-    class when_breaker_not_ready_for_try_to_close : using_a_mocked_event_factory
+    class when_breaker_not_ready_for_try_to_close : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private Exception _caughtException;
+        private bool _tryingToCloseFired;
 
         protected override void Given()
         {
             base.Given();
             _config = new CircuitBreakerConfig();
-
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
+            _circuitBreaker.TryingToCloseCircuitBreaker += (sender, args) => _tryingToCloseFired = true;
         }
 
         protected override void When()
@@ -51,7 +50,7 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open
         [Then]
         public void the_breaker_should_not_try_to_close()
         {
-            TryingToCloseEvent.Verify(e => e.RaiseEvent(_config), Times.Never);
+            Assert.That(_tryingToCloseFired, Is.Not.True);
         }
 
         [Then]

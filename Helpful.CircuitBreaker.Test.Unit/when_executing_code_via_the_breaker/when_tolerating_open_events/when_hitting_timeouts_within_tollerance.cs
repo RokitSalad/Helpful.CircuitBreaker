@@ -4,20 +4,18 @@ using System.Threading;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_tolerating_open_events
 {
-    class when_hitting_timeouts_within_tolerance : using_a_mocked_event_factory
+    class when_hitting_timeouts_within_tolerance : TestBase
     {
         private CircuitBreakerConfig _config;
         private TimeSpan _timeout;
         private CircuitBreaker _circuitBreaker;
         private List<Exception> _caughtExceptions;
+        private int _toleratedOpenedCount;
 
         protected override void Given()
         {
@@ -30,7 +28,8 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
                     Timeout = _timeout,
                     OpenEventTolerance = 2
                 };
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
+            _circuitBreaker.ToleratedOpenCircuitBreaker += (sender, args) => _toleratedOpenedCount++;
         }
 
         protected override void When()
@@ -72,7 +71,7 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
         [Then]
         public void two_tolerated_open_events_should_be_raised()
         {
-            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, BreakerOpenReason.Timeout, It.IsAny<Exception>()), Times.Exactly(2));
+            Assert.That(_toleratedOpenedCount, Is.EqualTo(2));
         }
     }
 }
