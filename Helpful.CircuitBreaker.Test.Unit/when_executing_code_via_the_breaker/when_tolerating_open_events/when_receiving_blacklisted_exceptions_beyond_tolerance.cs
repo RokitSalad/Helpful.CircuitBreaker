@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_tolerating_open_events
 {
-    class when_receiving_blacklisted_exceptions_beyond_tolerance : using_a_mocked_event_factory
+    class when_receiving_blacklisted_exceptions_beyond_tolerance : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private List<Exception> _caughtExceptions;
         private ArgumentNullException _thrownException;
+        private int _toleratedOpenEventCount;
+        private bool _openedEventFired;
 
         protected override void Given()
         {
@@ -28,7 +27,9 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
                 OpenEventTolerance = 2
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
+            _circuitBreaker.ToleratedOpenCircuitBreaker += (sender, args) => _toleratedOpenEventCount++;
+            _circuitBreaker.OpenedCircuitBreaker += (sender, args) => _openedEventFired = true;
             _thrownException = new ArgumentNullException();
         }
 
@@ -75,13 +76,13 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
         [Then]
         public void an_open_event_should_be_raised()
         {
-            OpenedEvent.Verify(e => e.RaiseEvent(_config, BreakerOpenReason.Exception, It.IsAny<Exception>()));
+            Assert.That(_openedEventFired, Is.True);
         }
 
         [Then]
         public void two_tolerated_open_events_should_be_raised()
         {
-            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, BreakerOpenReason.Exception, It.IsAny<Exception>()), Times.Exactly(2));
+            Assert.That(_toleratedOpenEventCount, Is.EqualTo(2));
         }
     }
 }

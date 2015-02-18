@@ -34,10 +34,6 @@
     <Reference Include="Helpful.BDD">
       <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.BDD.0.1.1\lib\net40\Helpful.BDD.dll</HintPath>
     </Reference>
-    <Reference Include="Helpful.CircuitBreaker.Events, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Helpful.CircuitBreaker\packages\Helpful.CircuitBreaker.Events.1.0.2\lib\net40\Helpful.CircuitBreaker.Events.dll</HintPath>
-    </Reference>
     <Reference Include="Moq">
       <HintPath>..\Helpful.CircuitBreaker\packages\Moq.4.2.1408.0619\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -54,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="using_a_mocked_event_factory.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_not_ready_for_retry.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_ready_for_retry.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_an_unhandled_exception.cs" />
@@ -91,9 +86,6 @@
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_blacklist_within_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_beyond_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_within_tolerance.cs" />
-    <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_an_exception_is_thrown.cs" />
-    <Compile Include="when_not_providing_an_event_factory\with_no_open_tolerance\when_trying_to_close_the_breaker.cs" />
-    <Compile Include="when_not_providing_an_event_factory\with_open_event_tolerance\when_an_exception_is_thrown.cs" />
     <Compile Include="when_scheduling_retries\when_there_are_a_series_of_open_periods\with_several_errors.cs" />
     <Compile Include="when_scheduling_retries\when_there_is_a_single_open_period\when_there_is_a_single_open_period.cs" />
     <Compile Include="when_scheduling_retries\when_there_is_a_single_open_period\with_several_errors.cs" />

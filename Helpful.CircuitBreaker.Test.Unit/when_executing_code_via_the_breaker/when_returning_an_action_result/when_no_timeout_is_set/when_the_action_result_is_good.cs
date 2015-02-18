@@ -2,12 +2,11 @@
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_returning_an_action_result.when_no_timeout_is_set
 {
-    class when_the_action_result_is_good : using_a_mocked_event_factory
+    class when_the_action_result_is_good : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
@@ -17,7 +16,7 @@ namespace when_executing_code_via_the_breaker.when_returning_an_action_result.wh
         {
             base.Given();
             _config = new CircuitBreakerConfig();
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
         }
 
         protected override void When()

@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_trying_to_close.when_configured_to_use_timeout
 {
-    class when_there_is_no_exception : using_a_mocked_event_factory
+    class when_there_is_no_exception : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private Exception _caughtException;
+        private bool _closedEventFired;
 
         protected override void Given()
         {
@@ -25,11 +24,9 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 OpenEventTolerance = 5,
             };
             
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
+            _circuitBreaker.ClosedCircuitBreaker += (sender, args) => _closedEventFired = true;
             _circuitBreaker.State = BreakerState.Open;
-
-            // need to reset expectations after the constructor has run
-            ClosedEvent.ResetCalls();
         }
 
         protected override void When()
@@ -53,7 +50,7 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         [Then]
         public void the_closed_event_should_be_fired()
         {
-            ClosedEvent.Verify(e => e.RaiseEvent(_config), Times.Once);
+            Assert.That(_closedEventFired, Is.True);
         }
 
         [Then]

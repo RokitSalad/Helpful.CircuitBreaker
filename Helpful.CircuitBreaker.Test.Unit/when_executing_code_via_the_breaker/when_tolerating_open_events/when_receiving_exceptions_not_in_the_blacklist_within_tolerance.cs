@@ -3,20 +3,18 @@ using System.Collections.Generic;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_tolerating_open_events
 {
-    class when_receiving_exceptions_not_in_the_blacklist_within_tolerance : using_a_mocked_event_factory
+    class when_receiving_exceptions_not_in_the_blacklist_within_tolerance : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private List<Exception> _caughtExceptions;
         private NullReferenceException _thrownException;
+        private bool _toleratedOpenEventFired;
 
         protected override void Given()
         {
@@ -24,7 +22,8 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
             _caughtExceptions = new List<Exception>();
             _config = new CircuitBreakerConfig {ExpectedExceptionListType = ExceptionListType.BlackList};
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
+            _circuitBreaker.ToleratedOpenCircuitBreaker += (sender, args) => _toleratedOpenEventFired = true;
             _thrownException = new NullReferenceException();
         }
 
@@ -74,7 +73,7 @@ namespace when_executing_code_via_the_breaker.when_tolerating_open_events
         [Then]
         public void no_tolerated_open_events_should_be_raised()
         {
-            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, BreakerOpenReason.Exception, It.IsAny<Exception>()), Times.Never);
+            Assert.That(_toleratedOpenEventFired, Is.False);
         }
     }
 }

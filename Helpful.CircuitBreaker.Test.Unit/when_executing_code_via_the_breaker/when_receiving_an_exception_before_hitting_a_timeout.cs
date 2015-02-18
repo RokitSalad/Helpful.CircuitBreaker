@@ -3,12 +3,11 @@ using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker
 {
-    class when_receiving_an_exception_before_hitting_a_timeout : using_a_mocked_event_factory
+    class when_receiving_an_exception_before_hitting_a_timeout : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
@@ -24,7 +23,7 @@ namespace when_executing_code_via_the_breaker
                 Timeout = TimeSpan.FromMilliseconds(1000),
                 UseTimeout = true
             };
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
         }
 
         protected override void When()

@@ -3,12 +3,11 @@ using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker
 {
-    class when_receiving_an_exception_not_in_the_whitelist : using_a_mocked_event_factory
+    class when_receiving_an_exception_not_in_the_whitelist : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
@@ -23,7 +22,7 @@ namespace when_executing_code_via_the_breaker
                 ExpectedExceptionListType = ExceptionListType.WhiteList
             };
             _config.ExpectedExceptionList.Add(typeof(ArgumentNullException));
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
             _thrownException = new NullReferenceException();
         }
 

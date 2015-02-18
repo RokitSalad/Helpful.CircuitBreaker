@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using Helpful.BDD;
 using Helpful.CircuitBreaker;
 using Helpful.CircuitBreaker.Config;
-using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
-using Helpful.CircuitBreaker.Test.Unit;
-using Moq;
 using NUnit.Framework;
 
 namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_trying_to_close.when_configured_not_to_use_timeout
 {
-    class when_receiving_an_unhandled_exception : using_a_mocked_event_factory
+    class when_receiving_an_unhandled_exception : TestBase
     {
         private CircuitBreakerConfig _config;
         private CircuitBreaker _circuitBreaker;
         private Exception _caughtException;
         private Exception _thrownException;
+        private int _openedEventCount;
+        private bool _toleratedOpenedEventFired;
 
         protected override void Given()
         {
@@ -28,7 +27,9 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
                 OpenEventTolerance = 5,
             };
 
-            _circuitBreaker = new CircuitBreaker(EventFactory.Object, _config);
+            _circuitBreaker = new CircuitBreaker(_config);
+            _circuitBreaker.OpenedCircuitBreaker += (sender, args) => _openedEventCount++;
+            _circuitBreaker.ToleratedOpenCircuitBreaker += (sender, args) => _toleratedOpenedEventFired = true;
             _thrownException = new IndexOutOfRangeException();
             _circuitBreaker.State = BreakerState.Open;
         }
@@ -54,14 +55,13 @@ namespace when_executing_code_via_the_breaker.when_breaker_state_is_open.when_tr
         [Then]
         public void the_open_event_should_be_fired()
         {
-            OpenedEvent.Verify(e => e.RaiseEvent(_config, BreakerOpenReason.Exception, _thrownException), Times.Once);
+            Assert.That(_openedEventCount, Is.EqualTo(1));
         }
-      
+
         [Then]
         public void no_exceptions_should_be_tolerated()
         {
-            ToleratedOpenEvent.Verify(e => e.RaiseEvent(It.IsAny<short>(), _config, 
-                It.IsAny<BreakerOpenReason>(), It.IsAny<Exception>()), Times.Never);
+            Assert.That(_toleratedOpenedEventFired, Is.False);
         }
 
         [Then]

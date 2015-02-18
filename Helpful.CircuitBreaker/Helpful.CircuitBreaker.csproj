@@ -32,10 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Helpful.CircuitBreaker.Events, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Helpful.CircuitBreaker.Events.1.0.2\lib\net40\Helpful.CircuitBreaker.Events.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,11 +45,9 @@
     <Compile Include="BreakerState.cs" />
     <Compile Include="CircuitBreaker.cs" />
     <Compile Include="Config\CircuitBreakerConfig.cs" />
-    <Compile Include="Config\FixedRetrySchedulerConfig.cs" />
-    <Compile Include="Config\ISchedulerConfig.cs" />
+    <Compile Include="Config\ICircuitBreakerDefinition.cs" />
     <Compile Include="Config\PermittedExceptionBehaviour.cs" />
-    <Compile Include="Config\SequentialRetrySchedulerConfig.cs" />
-    <Compile Include="EventFactoryValidator.cs" />
+    <Compile Include="Events\BreakerOpenReason.cs" />
     <Compile Include="Events\CircuitBreakerEventArgs.cs" />
     <Compile Include="Events\OpenedCircuitBreakerEventArgs.cs" />
     <Compile Include="Events\ToleratedOpenCircuitBreakerEventArgs.cs" />
@@ -64,16 +58,8 @@
     <Compile Include="Exceptions\CircuitBreakerOpenException.cs" />
     <Compile Include="Exceptions\CircuitBreakerTimedOutException.cs" />
     <Compile Include="ICircuitBreaker.cs" />
-    <Compile Include="IRetryScheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\InternalsVisibleTo.cs" />
-    <Compile Include="Schedulers\FixedRetryScheduler.cs" />
-    <Compile Include="Schedulers\SequentialRetryScheduler.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
