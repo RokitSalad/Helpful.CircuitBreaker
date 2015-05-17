@@ -12,7 +12,6 @@ The following code will initialise a basic circuit breaker which once open will 
 CircuitBreakerConfig config = new CircuitBreakerConfig
 {
     BreakerId = "Some unique and constant identifier that indicates the running instance and executing process"
-    SchedulerConfig = new FixedRetrySchedulerConfig { RetryPeriodInSeconds = 60 }
 };
 CircuitBreaker circuitBreaker = new CircuitBreaker(config);
 ```
