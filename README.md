@@ -20,11 +20,7 @@ To inject a circuit breaker into class TargetClass using Ninject, try code simil
 ```c#
 Bind<ICircuitBreaker>().ToMethod(c => new CircuitBreaker(new CircuitBreakerConfig
 {
-    BreakerId = string.Format("{0}-{1}-{2}", "Your breaker name", "TargetClass", Environment.MachineName),
-    SchedulerConfig = new FixedRetrySchedulerConfig
-    {
-        RetryPeriodInSeconds = 60
-    }
+    BreakerId = string.Format("{0}-{1}-{2}", "Your breaker name", "TargetClass", Environment.MachineName)
 })).WhenInjectedInto(typeof(TargetClass)).InSingletonScope();
 ```
 The above code will reuse the same breaker for all instances of the given class, so the breaker continues to report state continuously across different threads. When opened by one use, all instances of TargetClass will have an open breaker.
