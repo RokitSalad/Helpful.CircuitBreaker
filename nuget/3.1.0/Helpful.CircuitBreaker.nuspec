@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Helpful.CircuitBreaker</id>
+    <version>3.1.0</version>
+    <title>Helpful.CircuitBreaker</title>
+    <authors>RokitSalad</authors>
+    <owners>RokitSalad</owners>
+    <licenseUrl>https://github.com/RokitSalad/Helpful.CircuitBreaker/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/RokitSalad/Helpful.CircuitBreaker</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A simple circuit breaker library for .NET projects. Can be configured with minimal code.</description>
+    <releaseNotes>Added configuration element classes so breakers can be defined using web.config or app.config files.</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>Circuit Breaker, C#</tags>
+    <dependencies>
+        <dependency id="Newtonsoft.Json" version="7.0.1" />
+    </dependencies>
+  </metadata>
+</package>
