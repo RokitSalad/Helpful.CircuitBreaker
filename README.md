@@ -25,6 +25,57 @@ Bind<ICircuitBreaker>().ToMethod(c => new CircuitBreaker(new CircuitBreakerConfi
 ```
 The above code will reuse the same breaker for all instances of the given class, so the breaker continues to report state continuously across different threads. When opened by one use, all instances of TargetClass will have an open breaker.
 
+To allow configuration of circuit breakers from your web.config or app.config, refer to the following example.
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="circuitBreakerConfiguration" type="Helpful.CircuitBreaker.Config.Sections.CircuitBreakerConfigurationSection, Helpful.CircuitBreaker"/>
+  </configSections>
+  <circuitBreakerConfiguration>
+    <CircuitBreakers>
+      <CircuitBreaker BreakerId="TestBreaker1"
+                      AppliedToConcreteType="Helpful.CircuitBreaker.Test.Unit.Resources.Dummy1, Helpful.CircuitBreaker.Test.Unit"
+                      BreakerOpenPeriods="[30,90,200]"
+                      PermittedExceptionBehaviour="Swallow">
+        <Exceptions ListType="Whitelist">
+          <add ExceptionType="Helpful.CircuitBreaker.Test.Unit.Resources.DummyException1, Helpful.CircuitBreaker.Test.Unit" />
+        </Exceptions>
+      </CircuitBreaker>
+      <CircuitBreaker BreakerId="TestBreaker2"
+                      AppliedToConcreteType="Helpful.CircuitBreaker.Test.Unit.Resources.Dummy2, Helpful.CircuitBreaker.Test.Unit"
+                      BreakerOpenPeriods="[30]"
+                      OpenEventTolerance="3"
+                      PermittedExceptionBehaviour="PassThrough">
+        <Exceptions ListType="Blacklist">
+          <add ExceptionType="Helpful.CircuitBreaker.Test.Unit.Resources.DummyException1, Helpful.CircuitBreaker.Test.Unit" />
+          <add ExceptionType="Helpful.CircuitBreaker.Test.Unit.Resources.DummyException2, Helpful.CircuitBreaker.Test.Unit" />
+        </Exceptions>
+      </CircuitBreaker>
+      <CircuitBreaker BreakerId="TestBreaker3"
+                      AppliedToConcreteType="Helpful.CircuitBreaker.Test.Unit.Resources.Dummy3, Helpful.CircuitBreaker.Test.Unit"
+                      Timeout="200"
+                      UseTimeout="true">
+      </CircuitBreaker>
+    </CircuitBreakers>
+  </circuitBreakerConfiguration>
+</configuration>
+```
+
+The following code will result in a dictionary mapping the target class for dependency injection to the config for the circuit breaker being injected.
+
+```c#
+Dictionary<string, CircuitBreakerConfig> breakerConfigs = new Dictionary<string, CircuitBreakerConfig>();
+CircuitBreakerConfigurationSection circuitBreakerConfigurationSection = ConfigurationManager.GetSection("circuitBreakerConfiguration") as CircuitBreakerConfigurationSection;
+foreach (CircuitBreakerConfigSection config in circuitBreakerConfigurationSection.CircuitBreakers)
+{
+    breakerConfigs.Add(config.AppliedToConcreteType, config.ToBreakerConfig());
+}
+```
+
+The dictionary can now be used to create ioc bindings using your preferred ioc container.
+
 ## Usage ##
 There are 2 primary ways that the circuit breaker can be used:
 <ol>
