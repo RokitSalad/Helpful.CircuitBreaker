@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Helpful.CircuitBreaker.Events;
 
 namespace Helpful.CircuitBreaker.Config
 {

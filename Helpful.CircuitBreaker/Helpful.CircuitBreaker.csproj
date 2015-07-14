@@ -59,6 +59,7 @@
     <Compile Include="Config\Sections\CircuitBreakerConfigSection.cs" />
     <Compile Include="Config\Sections\ExceptionListTypeConfig.cs" />
     <Compile Include="Config\Sections\Extensions.cs" />
+    <Compile Include="Config\Sections\PermittedExceptionBehaviourConfig.cs" />
     <Compile Include="Events\BreakerOpenReason.cs" />
     <Compile Include="Events\CircuitBreakerEventArgs.cs" />
     <Compile Include="Events\OpenedCircuitBreakerEventArgs.cs" />

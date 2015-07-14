@@ -11,16 +11,24 @@ namespace Helpful.CircuitBreaker.Config.Sections
         {
             var circuitBreakerConfig = new CircuitBreakerConfig
             {
-                BreakerId = string.Format("{0}-{1}", Environment.MachineName, circuitBreakerConfigSection.BreakerId),
+                BreakerId = string.Format("{0}-{1}", circuitBreakerConfigSection.BreakerId, Environment.MachineName),
                 UseTimeout = circuitBreakerConfigSection.UseTimeout,
                 OpenEventTolerance = circuitBreakerConfigSection.OpenEventTolerance,
                 Timeout = GetTimeout(circuitBreakerConfigSection),
-                ExpectedExceptionListType = GetExceptionListType(circuitBreakerConfigSection),
                 ExpectedExceptionList = GetExpectedExceptionList(circuitBreakerConfigSection)
             };
             if (!string.IsNullOrEmpty(circuitBreakerConfigSection.BreakerOpenPeriods))
             {
                 circuitBreakerConfig.BreakerOpenPeriods = GetBreakerOpenPeriods(circuitBreakerConfigSection);
+            }
+            if (circuitBreakerConfigSection.Exceptions.Count > 0)
+            {
+                circuitBreakerConfig.ExpectedExceptionListType = GetExceptionListType(circuitBreakerConfigSection);
+            }
+            if (circuitBreakerConfigSection.PermittedExceptionBehaviourConfig != PermittedExceptionBehaviourConfig.None)
+            {
+                circuitBreakerConfig.PermittedExceptionPassThrough =
+                    GetPermittedExceptionBehaviour(circuitBreakerConfigSection);
             }
             return circuitBreakerConfig;
         }
@@ -73,6 +81,17 @@ namespace Helpful.CircuitBreaker.Config.Sections
                     return ExceptionListType.WhiteList;
                 default:
                     return ExceptionListType.None;
+            }
+        }
+
+        private static PermittedExceptionBehaviour GetPermittedExceptionBehaviour(CircuitBreakerConfigSection circuitBreakerConfigSection)
+        {
+            switch (circuitBreakerConfigSection.PermittedExceptionBehaviourConfig)
+            {
+                case PermittedExceptionBehaviourConfig.Swallow:
+                    return PermittedExceptionBehaviour.Swallow;
+                default:
+                    return PermittedExceptionBehaviour.PassThrough;
             }
         }
     }

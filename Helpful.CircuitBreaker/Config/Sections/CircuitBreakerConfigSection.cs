@@ -47,7 +47,14 @@ namespace Helpful.CircuitBreaker.Config.Sections
             set { base["AppliedToConcreteType"] = value; }
         }
 
-        [ConfigurationProperty("Exceptions", IsDefaultCollection = true, IsKey = false, IsRequired = true)]
+        [ConfigurationProperty("PermittedExceptionBehaviour", IsRequired = false)]
+        public PermittedExceptionBehaviourConfig PermittedExceptionBehaviourConfig
+        {
+            get { return (PermittedExceptionBehaviourConfig)base["PermittedExceptionBehaviour"]; }
+            set { base["PermittedExceptionBehaviour"] = value; }
+        }
+
+        [ConfigurationProperty("Exceptions", IsDefaultCollection = true, IsKey = false, IsRequired = false)]
         public CircuitBreakerListedExceptionsCollection Exceptions
         {
             get { return (CircuitBreakerListedExceptionsCollection)base["Exceptions"]; }
