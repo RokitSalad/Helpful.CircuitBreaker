@@ -7,6 +7,8 @@ using Helpful.CircuitBreaker.Exceptions;
 
 namespace Helpful.CircuitBreaker
 {
+    using System.Threading;
+
     /// <summary>
     /// </summary>
     public class CircuitBreaker : ICircuitBreaker
@@ -16,7 +18,8 @@ namespace Helpful.CircuitBreaker
         private bool _disposed;
         private int _openPeriodIndex;
         private DateTime _openedTime;
-        private short _toleratedOpenEventCount;
+        private volatile int _toleratedOpenEventCount;
+        private DateTime _firstToleratedEventTime;
 
         /// <summary>
         /// Raised when the circuit breaker enters the closed state
@@ -51,6 +54,11 @@ namespace Helpful.CircuitBreaker
         private bool CanTryToCloseBreaker
         {
             get { return _openedTime + _config.BreakerOpenPeriods[_openPeriodIndex] <= DateTime.UtcNow; }
+        }
+
+        private bool CanResetToleratedEventCount
+        {
+            get { return _firstToleratedEventTime != DateTime.MinValue && _firstToleratedEventTime + _config.OpenEventToleranceResetPeriod <= DateTime.UtcNow; }
         }
 
         /// <summary>
@@ -104,7 +112,14 @@ namespace Helpful.CircuitBreaker
 
             try
             {
-                ExecuteTheDelegate(action);
+                if (!_config.UseImmediateFailureRetry)
+                {
+                    ExecuteTheDelegate(action);
+                }
+                else
+                {
+                    ExecuteTheDelegateWithImmediateRetry(action);
+                }
                 CloseCircuitBreaker();
             }
             catch (CircuitBreakerTimedOutException)
@@ -166,6 +181,18 @@ namespace Helpful.CircuitBreaker
                 {
                     throw new ActionResultNotGoodException(_config);
                 }
+            }
+        }
+
+        private void ExecuteTheDelegateWithImmediateRetry(Func<ActionResult> action)
+        {
+            try
+            {
+                ExecuteTheDelegate(action);
+            }
+            catch
+            {
+                ExecuteTheDelegate(action);
             }
         }
 
@@ -259,6 +286,11 @@ namespace Helpful.CircuitBreaker
                 {
                     SafeIncrementOpenPeriodIndex();
                 }
+                if (CanResetToleratedEventCount)
+                {
+                    _toleratedOpenEventCount = 0;
+                    _firstToleratedEventTime = DateTime.MinValue;
+                }
                 if (State == BreakerState.HalfOpen || _toleratedOpenEventCount >= _config.OpenEventTolerance)
                 {
                     State = BreakerState.Open;
@@ -269,6 +301,10 @@ namespace Helpful.CircuitBreaker
                 else
                 {
                     OnToleratedOpenBreaker(_toleratedOpenEventCount++, reason, thrownException);
+                    if (_toleratedOpenEventCount == 1)
+                    {
+                        _firstToleratedEventTime = DateTime.UtcNow;
+                    };
                 }
             }
         }
@@ -280,7 +316,7 @@ namespace Helpful.CircuitBreaker
                 : _openPeriodIndex + 1;
         }
 
-        private void OnToleratedOpenBreaker(short toleratedOpenEventCount, BreakerOpenReason reason, Exception thrownException)
+        private void OnToleratedOpenBreaker(int toleratedOpenEventCount, BreakerOpenReason reason, Exception thrownException)
         {
             if (ToleratedOpenCircuitBreaker != null)
             {

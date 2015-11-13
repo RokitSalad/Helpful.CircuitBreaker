@@ -1,5 +1,4 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 
 namespace Helpful.CircuitBreaker.Config.Sections
 {
@@ -17,6 +16,13 @@ namespace Helpful.CircuitBreaker.Config.Sections
         {
             get { return (short)base["OpenEventTolerance"]; }
             set { base["OpenEventTolerance"] = value; }
+        }
+
+        [ConfigurationProperty("OpenEventToleranceResetPeriod")]
+        public string OpenEventToleranceResetPeriod
+        {
+            get { return (string)base["OpenEventToleranceResetPeriod"]; }
+            set { base["OpenEventToleranceResetPeriod"] = value; }
         }
 
         [ConfigurationProperty("Timeout")]
@@ -59,6 +65,13 @@ namespace Helpful.CircuitBreaker.Config.Sections
         {
             get { return (CircuitBreakerListedExceptionsCollection)base["Exceptions"]; }
             set { base["Exceptions"] = value; }
+        }
+
+        [ConfigurationProperty("UseImmediateFailureRetry")]
+        public bool UseImmediateFailureRetry
+        {
+            get { return (bool)base["UseImmediateFailureRetry"]; }
+            set { base["UseTimeout"] = value; }
         }
     }
 }

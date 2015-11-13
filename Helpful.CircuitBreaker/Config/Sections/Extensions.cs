@@ -15,7 +15,8 @@ namespace Helpful.CircuitBreaker.Config.Sections
                 UseTimeout = circuitBreakerConfigSection.UseTimeout,
                 OpenEventTolerance = circuitBreakerConfigSection.OpenEventTolerance,
                 Timeout = GetTimeout(circuitBreakerConfigSection),
-                ExpectedExceptionList = GetExpectedExceptionList(circuitBreakerConfigSection)
+                ExpectedExceptionList = GetExpectedExceptionList(circuitBreakerConfigSection),
+                UseImmediateFailureRetry = circuitBreakerConfigSection.UseImmediateFailureRetry
             };
             if (!string.IsNullOrEmpty(circuitBreakerConfigSection.BreakerOpenPeriods))
             {
@@ -30,7 +31,22 @@ namespace Helpful.CircuitBreaker.Config.Sections
                 circuitBreakerConfig.PermittedExceptionPassThrough =
                     GetPermittedExceptionBehaviour(circuitBreakerConfigSection);
             }
+            if (!string.IsNullOrEmpty(circuitBreakerConfigSection.OpenEventToleranceResetPeriod))
+            {
+                circuitBreakerConfig.OpenEventToleranceResetPeriod =
+                    GetOpenEventToleranceResetPeriod(circuitBreakerConfigSection);
+            }
             return circuitBreakerConfig;
+        }
+
+        private static TimeSpan GetOpenEventToleranceResetPeriod(CircuitBreakerConfigSection circuitBreakerConfigSection)
+        {
+            int seconds;
+            if (int.TryParse(circuitBreakerConfigSection.OpenEventToleranceResetPeriod, out seconds))
+            {
+                return TimeSpan.FromSeconds(seconds);
+            }
+            return TimeSpan.FromSeconds(300);
         }
 
         private static TimeSpan GetTimeout(CircuitBreakerConfigSection circuitBreakerConfigSection)

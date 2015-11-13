@@ -86,6 +86,8 @@
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_hitting_timeouts_within_tollerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_an_unhandled_exceptions_beyond_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_an_unhandled_exceptions_within_tolerance.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_unhandled_exceptions_beyond_tolerance_a_previous_batch_was_reset.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_an_unhandled_exception_beyond_tolerance_and_after_the_tolerance_reset_timeout_has_elapsed.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_blacklisted_exceptions_beyond_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_blacklisted_exceptions_within_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_before_hitting_timeouts_beyond_tolerance.cs" />
@@ -94,13 +96,17 @@
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_blacklist_within_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_beyond_tolerance.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_within_tolerance.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_using_immediate_failure_retry_and_the_second_attempt_fails.cs" />
+    <Compile Include="when_executing_code_via_the_breaker\when_using_immediate_failure_retry_and_the_second_attempt_succeeds.cs" />
     <Compile Include="when_initialising_a_breaker\when_using_a_config_section.cs" />
     <Compile Include="when_scheduling_retries\when_there_are_a_series_of_open_periods\with_several_errors.cs" />
     <Compile Include="when_scheduling_retries\when_there_is_a_single_open_period\when_there_is_a_single_open_period.cs" />
     <Compile Include="when_scheduling_retries\when_there_is_a_single_open_period\with_several_errors.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

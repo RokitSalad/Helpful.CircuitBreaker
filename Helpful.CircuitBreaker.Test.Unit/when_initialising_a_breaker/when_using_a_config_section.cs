@@ -6,7 +6,6 @@ using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Config.Sections;
 using Helpful.CircuitBreaker.Test.Unit.Resources;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace Helpful.CircuitBreaker.Test.Unit.when_initialising_a_breaker
 {
@@ -141,6 +140,22 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_initialising_a_breaker
             Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy1, Helpful.CircuitBreaker.Test.Unit"].PermittedExceptionPassThrough, Is.EqualTo(PermittedExceptionBehaviour.Swallow));
             Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy2, Helpful.CircuitBreaker.Test.Unit"].PermittedExceptionPassThrough, Is.EqualTo(PermittedExceptionBehaviour.PassThrough));
             Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy3, Helpful.CircuitBreaker.Test.Unit"].PermittedExceptionPassThrough, Is.EqualTo(PermittedExceptionBehaviour.PassThrough));
+        }
+
+        [Then]
+        public void the_open_event_tolerance_reset_periods_are_correct()
+        {
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy1, Helpful.CircuitBreaker.Test.Unit"].OpenEventToleranceResetPeriod, Is.EqualTo(TimeSpan.FromMinutes(5)));
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy2, Helpful.CircuitBreaker.Test.Unit"].OpenEventToleranceResetPeriod, Is.EqualTo(TimeSpan.FromMinutes(20)));
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy3, Helpful.CircuitBreaker.Test.Unit"].OpenEventToleranceResetPeriod, Is.EqualTo(TimeSpan.FromMinutes(7)));
+        }
+
+        [Then]
+        public void the_use_immediate_failure_retry_flags_are_correct()
+        {
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy1, Helpful.CircuitBreaker.Test.Unit"].UseImmediateFailureRetry, Is.EqualTo(false));
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy2, Helpful.CircuitBreaker.Test.Unit"].UseImmediateFailureRetry, Is.EqualTo(true));
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy3, Helpful.CircuitBreaker.Test.Unit"].UseImmediateFailureRetry, Is.EqualTo(false));
         }
     }
 }

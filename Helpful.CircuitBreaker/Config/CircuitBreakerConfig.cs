@@ -18,6 +18,7 @@ namespace Helpful.CircuitBreaker.Config
             ExpectedExceptionListType = ExceptionListType.None;
             PermittedExceptionPassThrough = PermittedExceptionBehaviour.PassThrough;
             BreakerOpenPeriods = new[] { TimeSpan.FromSeconds(60) };
+            OpenEventToleranceResetPeriod = TimeSpan.FromMinutes(5);
         }
 
         /// <summary>
@@ -27,6 +28,14 @@ namespace Helpful.CircuitBreaker.Config
         /// The open event tolerance.
         /// </value>
         public short OpenEventTolerance { get; set; }
+
+        /// <summary>
+        /// The period of time after which the count of tolerated failures will be reset.
+        /// </summary>
+        /// <value>
+        /// The timespan representing the time interval.
+        /// </value>
+        public TimeSpan OpenEventToleranceResetPeriod { get; set; }
 
         /// <summary>
         /// Gets or sets the list of periods the breaker should be kept open. 
@@ -69,6 +78,15 @@ namespace Helpful.CircuitBreaker.Config
         ///   <c>true</c> if [use timeout]; otherwise, <c>false</c>.
         /// </value>
         public bool UseTimeout { get; set; }
+
+        /// <summary>
+        /// Get or sets a value indicating whether a delegate failure
+        /// should cause an immediate retry.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if immediate retries are in effect; otherwise, <c>false</c>.
+        /// </value>
+        public bool UseImmediateFailureRetry { get; set; }
 
         /// <summary>
         /// Gets or sets the breaker identifier.
