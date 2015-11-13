@@ -31,11 +31,11 @@ namespace Helpful.CircuitBreaker.Events
         /// <param name="exception">The source exception</param>
         /// <param name="toleratedOpenEventCount">How many open events have been tolerated</param>
         public ToleratedOpenCircuitBreakerEventArgs(CircuitBreakerConfig config, BreakerOpenReason reason,
-            Exception exception, short toleratedOpenEventCount) : base(config)
+            Exception exception, int toleratedOpenEventCount) : base(config)
         {
             Reason = reason;
             Exception = exception;
-            ToleratedOpenEventCount = toleratedOpenEventCount;
+            ToleratedOpenEventCount = (short)toleratedOpenEventCount;
         }
     }
 }
