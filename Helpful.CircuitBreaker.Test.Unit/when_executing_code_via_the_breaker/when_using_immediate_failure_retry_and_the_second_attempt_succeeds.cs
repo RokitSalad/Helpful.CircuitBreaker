@@ -22,7 +22,7 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_executing_code_via_the_breaker
             _caughtExceptions = new List<Exception>();
             _config = new CircuitBreakerConfig
             {
-                UseImmediateFailureRetry = true
+                ImmediateRetryOnFailure = true
             };
 
             _circuitBreaker = new CircuitBreaker(_config);

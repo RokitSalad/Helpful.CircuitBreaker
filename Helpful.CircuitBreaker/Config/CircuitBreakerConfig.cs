@@ -86,7 +86,7 @@ namespace Helpful.CircuitBreaker.Config
         /// <value>
         /// <c>true</c> if immediate retries are in effect; otherwise, <c>false</c>.
         /// </value>
-        public bool UseImmediateFailureRetry { get; set; }
+        public bool ImmediateRetryOnFailure { get; set; }
 
         /// <summary>
         /// Gets or sets the breaker identifier.

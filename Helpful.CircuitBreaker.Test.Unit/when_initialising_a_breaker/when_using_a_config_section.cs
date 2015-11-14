@@ -153,9 +153,9 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_initialising_a_breaker
         [Then]
         public void the_use_immediate_failure_retry_flags_are_correct()
         {
-            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy1, Helpful.CircuitBreaker.Test.Unit"].UseImmediateFailureRetry, Is.EqualTo(false));
-            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy2, Helpful.CircuitBreaker.Test.Unit"].UseImmediateFailureRetry, Is.EqualTo(true));
-            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy3, Helpful.CircuitBreaker.Test.Unit"].UseImmediateFailureRetry, Is.EqualTo(false));
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy1, Helpful.CircuitBreaker.Test.Unit"].ImmediateRetryOnFailure, Is.EqualTo(false));
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy2, Helpful.CircuitBreaker.Test.Unit"].ImmediateRetryOnFailure, Is.EqualTo(true));
+            Assert.That(_breakerConfigs["Helpful.CircuitBreaker.Test.Unit.Resources.Dummy3, Helpful.CircuitBreaker.Test.Unit"].ImmediateRetryOnFailure, Is.EqualTo(false));
         }
     }
 }

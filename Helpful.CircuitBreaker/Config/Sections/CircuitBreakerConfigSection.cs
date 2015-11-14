@@ -67,10 +67,10 @@ namespace Helpful.CircuitBreaker.Config.Sections
             set { base["Exceptions"] = value; }
         }
 
-        [ConfigurationProperty("UseImmediateFailureRetry")]
+        [ConfigurationProperty("ImmediateRetryOnFailure")]
         public bool UseImmediateFailureRetry
         {
-            get { return (bool)base["UseImmediateFailureRetry"]; }
+            get { return (bool)base["ImmediateRetryOnFailure"]; }
             set { base["UseTimeout"] = value; }
         }
     }

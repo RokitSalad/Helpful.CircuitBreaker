@@ -112,7 +112,7 @@ namespace Helpful.CircuitBreaker
 
             try
             {
-                if (!_config.UseImmediateFailureRetry)
+                if (!_config.ImmediateRetryOnFailure)
                 {
                     ExecuteTheDelegate(action);
                 }

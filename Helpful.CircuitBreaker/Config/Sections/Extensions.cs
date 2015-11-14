@@ -16,7 +16,7 @@ namespace Helpful.CircuitBreaker.Config.Sections
                 OpenEventTolerance = circuitBreakerConfigSection.OpenEventTolerance,
                 Timeout = GetTimeout(circuitBreakerConfigSection),
                 ExpectedExceptionList = GetExpectedExceptionList(circuitBreakerConfigSection),
-                UseImmediateFailureRetry = circuitBreakerConfigSection.UseImmediateFailureRetry
+                ImmediateRetryOnFailure = circuitBreakerConfigSection.UseImmediateFailureRetry
             };
             if (!string.IsNullOrEmpty(circuitBreakerConfigSection.BreakerOpenPeriods))
             {
