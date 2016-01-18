@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Helpful.CircuitBreaker.Test.Unit</RootNamespace>
     <AssemblyName>Helpful.CircuitBreaker.Test.Unit</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Helpful.BDD, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -58,6 +60,46 @@
     <Compile Include="Resources\Dummy1.cs" />
     <Compile Include="Resources\DummyException2.cs" />
     <Compile Include="Resources\DummyException.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_not_ready_for_retry.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_ready_for_retry.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_an_unhandled_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_a_blacklisted_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_a_whitelisted_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_there_is_no_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_hitting_a_timeout.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_receiving_an_unhandled_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_receiving_a_blacklisted_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_receiving_a_whitelisted_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_to_use_timeout\when_there_is_no_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_hitting_a_timeout.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_an_exception_before_hitting_a_timeout.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_an_exception_in_the_whitelist\when_permitted_exception_pass_through_is_set_to_pass_through.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_an_exception_in_the_whitelist\when_permitted_exception_pass_through_is_set_to_swallow.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_an_exception_not_in_the_blacklist\when_permitted_exception_pass_through_is_set_to_pass_through.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_an_exception_not_in_the_blacklist\when_permitted_exception_pass_through_is_set_to_swallow.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_an_exception_not_in_the_whitelist.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_an_unhandled_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_receiving_a_blacklisted_exception.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_returning_an_action_result\when_a_timeout_is_set\when_the_action_result_is_failure.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_returning_an_action_result\when_a_timeout_is_set\when_the_action_result_is_good.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_returning_an_action_result\when_no_timeout_is_set\when_the_action_result_is_failure.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_returning_an_action_result\when_no_timeout_is_set\when_the_action_result_is_good.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_hitting_timeouts_beyond_tollerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_hitting_timeouts_within_tollerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_an_unhandled_exceptions_beyond_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_an_unhandled_exceptions_within_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_an_unhandled_exception_beyond_tolerance_and_after_the_tolerance_reset_timeout_has_elapsed.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_blacklisted_exceptions_beyond_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_blacklisted_exceptions_within_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_before_hitting_timeouts_beyond_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_before_hitting_timeouts_within_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_in_the_whitelist_within_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_blacklist_within_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_beyond_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_exceptions_not_in_the_whitelist_within_tolerance.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_tolerating_open_events\when_receiving_unhandled_exceptions_beyond_tolerance_a_previous_batch_was_reset.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_using_immediate_failure_retry_and_the_second_attempt_fails.cs" />
+    <Compile Include="when_executing_async_code_via_the_breaker\when_using_immediate_failure_retry_and_the_second_attempt_succeeds.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_not_ready_for_retry.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_scheduler_ready_for_retry.cs" />
     <Compile Include="when_executing_code_via_the_breaker\when_breaker_state_is_open\when_trying_to_close\when_configured_not_to_use_timeout\when_receiving_an_unhandled_exception.cs" />
@@ -107,7 +149,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Helpful.CircuitBreaker\Helpful.CircuitBreaker.csproj">

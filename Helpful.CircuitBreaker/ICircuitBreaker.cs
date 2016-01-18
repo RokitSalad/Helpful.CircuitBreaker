@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Helpful.CircuitBreaker.Events;
 using Helpful.CircuitBreaker.Exceptions;
 
@@ -69,5 +70,25 @@ namespace Helpful.CircuitBreaker
         /// <exception cref="ArgumentNullException">The value of 'action' cannot be null.</exception>
         /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
         void Execute(Action action);
+
+        /// <summary>
+        ///     Executes the specified async action in the circuit breaker. The ActionResult of this function determines whether the breaker will try to open.
+        /// </summary>
+        /// <param name="asyncAction">A function returning the async action to execute.</param>
+        /// <exception cref="CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="ArgumentNullException">The value of 'asyncAction' cannot be null.</exception>
+        /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
+        /// <returns>An awaitable task</returns>
+        Task ExecuteAsync(Func<Task<ActionResult>> asyncAction);
+
+        /// <summary>
+        ///     Executes the specified action in the circuit breaker
+        /// </summary>
+        /// <param name="asyncAction">A function returning the async action to execute.</param>
+        /// <exception cref="CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="ArgumentNullException">The value of 'asyncAction' cannot be null.</exception>
+        /// <exception cref="AggregateException">An exception contained by this <see cref="T:System.AggregateException" /> was not handled.</exception>
+        /// <returns>An awaitable task</returns>
+        Task ExecuteAsync(Func<Task> asyncAction);
     }
 }

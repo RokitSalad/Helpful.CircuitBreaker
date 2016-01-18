@@ -7,8 +7,6 @@ using Helpful.CircuitBreaker.Exceptions;
 
 namespace Helpful.CircuitBreaker
 {
-    using System.Threading;
-
     /// <summary>
     /// </summary>
     public class CircuitBreaker : ICircuitBreaker
@@ -157,6 +155,74 @@ namespace Helpful.CircuitBreaker
             });
         }
 
+        /// <summary>
+        /// Executes the specified async action in the circuit breaker. The ActionResult of this function determines whether the breaker will try to open.
+        /// </summary>
+        /// <param name="asyncAction">A function returning the async action to execute.</param>
+        /// <exception cref="T:Helpful.CircuitBreaker.Exceptions.CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="T:System.ArgumentNullException">The value of 'asyncAction' cannot be null.</exception>
+        /// <exception cref="T:System.AggregateException">An exception contained by this <see cref="T:System.AggregateException"/> was not handled.</exception>
+        /// <returns>An awaitable task</returns>
+        public async Task ExecuteAsync(Func<Task<ActionResult>> asyncAction)
+        {
+            if (asyncAction == null)
+                throw new ArgumentNullException("asyncAction");
+
+            EnsureBreakerRegistered();
+
+            HandleOpenBreaker();
+
+            try
+            {
+                if (!_config.ImmediateRetryOnFailure)
+                {
+                    await ExecuteTheActionAsync(asyncAction);
+                }
+                else
+                {
+                    await ExecuteTheActionWithImmediateRetryAsync(asyncAction);
+                }
+
+                CloseCircuitBreaker();
+            }
+            catch (CircuitBreakerTimedOutException)
+            {
+                OpenBreaker(BreakerOpenReason.Timeout);
+                throw;
+            }
+            catch (AggregateException ae)
+            {
+                ae.Handle(e =>
+                {
+                    HandleException(e);
+                    return true;
+                });
+            }
+            catch (Exception e)
+            {
+                HandleException(e);
+            }
+        }
+
+        /// <summary>
+        /// Executes the specified action in the circuit breaker
+        /// </summary>
+        /// <param name="asyncAction">A function returning the async action to execute.</param>
+        /// <exception cref="T:Helpful.CircuitBreaker.Exceptions.CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="T:System.ArgumentNullException">The value of 'asyncAction' cannot be null.</exception>
+        /// <exception cref="T:System.AggregateException">An exception contained by this <see cref="T:System.AggregateException"/> was not handled.</exception>
+        /// <returns>An awaitable task</returns>
+        public async Task ExecuteAsync(Func<Task> asyncAction)
+        {
+            Func<Task<ActionResult>> wrapper = async () =>
+            {
+                await asyncAction();
+                return ActionResult.Good;
+            };
+
+            await ExecuteAsync(wrapper);
+        }
+
         private void ExecuteTheDelegate(Func<ActionResult> action)
         {
             Task<ActionResult> task = new TaskFactory()
@@ -193,6 +259,45 @@ namespace Helpful.CircuitBreaker
             catch
             {
                 ExecuteTheDelegate(action);
+            }
+        }
+
+        private async Task ExecuteTheActionAsync(Func<Task<ActionResult>> asyncActionProvider)
+        {
+            ActionResult result;
+
+            var asyncAction = asyncActionProvider();
+
+            if (_config.UseTimeout)
+            {
+                var completedTask = await Task.WhenAny(asyncAction, Task.Delay(_config.Timeout));
+                if (completedTask != asyncAction)
+                {
+                    throw new CircuitBreakerTimedOutException(_config);
+                }
+
+                result = asyncAction.Result;
+            }
+            else
+            {
+                result = await asyncAction;
+            }
+
+            if (result == ActionResult.Failure)
+            {
+                throw new ActionResultNotGoodException(_config);
+            }
+        }
+
+        private async Task ExecuteTheActionWithImmediateRetryAsync(Func<Task<ActionResult>> asyncActionProvider)
+        {
+            try
+            {
+                await ExecuteTheActionAsync(asyncActionProvider);
+            }
+            catch (Exception)
+            {
+                await ExecuteTheActionAsync(asyncActionProvider);
             }
         }
 
@@ -304,7 +409,7 @@ namespace Helpful.CircuitBreaker
                     if (_toleratedOpenEventCount == 1)
                     {
                         _firstToleratedEventTime = DateTime.UtcNow;
-                    };
+                    }
                 }
             }
         }
