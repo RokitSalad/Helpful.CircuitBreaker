@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Helpful.CircuitBreaker.Config;
 using Helpful.CircuitBreaker.Events;
@@ -165,6 +166,20 @@ namespace Helpful.CircuitBreaker
         /// <returns>An awaitable task</returns>
         public async Task ExecuteAsync(Func<Task<ActionResult>> asyncAction)
         {
+            await ExecuteAsync(asyncAction, new CancellationTokenSource());
+        }
+
+        /// <summary>
+        /// Executes the specified async action in the circuit breaker. The ActionResult of this function determines whether the breaker will try to open.
+        /// </summary>
+        /// <param name="asyncAction">A function returning the async action to execute.</param>
+        /// <param name="cancellationTokenSource">Required to support task cancellation.</param>
+        /// <exception cref="T:Helpful.CircuitBreaker.Exceptions.CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="T:System.ArgumentNullException">The value of 'asyncAction' cannot be null.</exception>
+        /// <exception cref="T:System.AggregateException">An exception contained by this <see cref="T:System.AggregateException"/> was not handled.</exception>
+        /// <returns>An awaitable task</returns>
+        public async Task ExecuteAsync(Func<Task<ActionResult>> asyncAction, CancellationTokenSource cancellationTokenSource)
+        {
             if (asyncAction == null)
                 throw new ArgumentNullException("asyncAction");
 
@@ -176,11 +191,11 @@ namespace Helpful.CircuitBreaker
             {
                 if (!_config.ImmediateRetryOnFailure)
                 {
-                    await ExecuteTheActionAsync(asyncAction);
+                    await ExecuteTheActionAsync(asyncAction, cancellationTokenSource);
                 }
                 else
                 {
-                    await ExecuteTheActionWithImmediateRetryAsync(asyncAction);
+                    await ExecuteTheActionWithImmediateRetryAsync(asyncAction, cancellationTokenSource);
                 }
 
                 CloseCircuitBreaker();
@@ -220,7 +235,27 @@ namespace Helpful.CircuitBreaker
                 return ActionResult.Good;
             };
 
-            await ExecuteAsync(wrapper);
+            await ExecuteAsync(wrapper, new CancellationTokenSource());
+        }
+
+        /// <summary>
+        /// Executes the specified action in the circuit breaker
+        /// </summary>
+        /// <param name="asyncAction">A function returning the async action to execute.</param>
+        /// <param name="cancellationTokenSource">Required to support task cancellation.</param>
+        /// <exception cref="T:Helpful.CircuitBreaker.Exceptions.CircuitBreakerTimedOutException">The action timed out </exception>
+        /// <exception cref="T:System.ArgumentNullException">The value of 'asyncAction' cannot be null.</exception>
+        /// <exception cref="T:System.AggregateException">An exception contained by this <see cref="T:System.AggregateException"/> was not handled.</exception>
+        /// <returns>An awaitable task</returns>
+        public async Task ExecuteAsync(Func<Task> asyncAction, CancellationTokenSource cancellationTokenSource)
+        {
+            Func<Task<ActionResult>> wrapper = async () =>
+            {
+                await asyncAction();
+                return ActionResult.Good;
+            };
+
+            await ExecuteAsync(wrapper, cancellationTokenSource);
         }
 
         private void ExecuteTheDelegate(Func<ActionResult> action)
@@ -262,7 +297,7 @@ namespace Helpful.CircuitBreaker
             }
         }
 
-        private async Task ExecuteTheActionAsync(Func<Task<ActionResult>> asyncActionProvider)
+        private async Task ExecuteTheActionAsync(Func<Task<ActionResult>> asyncActionProvider, CancellationTokenSource cancellationTokenSource)
         {
             ActionResult result;
 
@@ -270,7 +305,10 @@ namespace Helpful.CircuitBreaker
 
             if (_config.UseTimeout)
             {
-                var completedTask = await Task.WhenAny(asyncAction, Task.Delay(_config.Timeout));
+                var delayTask = Task.Delay(_config.Timeout, cancellationTokenSource.Token);
+                var completedTask = await Task.WhenAny(asyncAction, delayTask);
+                cancellationTokenSource.Cancel(false);
+
                 if (completedTask != asyncAction)
                 {
                     throw new CircuitBreakerTimedOutException(_config);
@@ -289,15 +327,15 @@ namespace Helpful.CircuitBreaker
             }
         }
 
-        private async Task ExecuteTheActionWithImmediateRetryAsync(Func<Task<ActionResult>> asyncActionProvider)
+        private async Task ExecuteTheActionWithImmediateRetryAsync(Func<Task<ActionResult>> asyncActionProvider, CancellationTokenSource cancellationTokenSource)
         {
             try
             {
-                await ExecuteTheActionAsync(asyncActionProvider);
+                await ExecuteTheActionAsync(asyncActionProvider, cancellationTokenSource);
             }
             catch (Exception)
             {
-                await ExecuteTheActionAsync(asyncActionProvider);
+                await ExecuteTheActionAsync(asyncActionProvider, cancellationTokenSource);
             }
         }
 
