@@ -36,23 +36,23 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_executing_async_code_via_the_bre
 
         private void CallExecuteAsync()
         {
-            try
+            Task.Run(async () =>
             {
-                Func<Task<ActionResult>> action = async () =>
+                try
                 {
-                    await Task.Yield();
-                    return ActionResult.Failure;
-                };
-                _circuitBreaker.ExecuteAsync(action).Wait();
-            }
-            catch (AggregateException ae)
-            {
-                _caughtExceptions.Add(ae.InnerException);
-            }
-            catch (Exception e)
-            {
-                _caughtExceptions.Add(e);
-            }
+                    Func<Task<ActionResult>> action = async () =>
+                    {
+                        await Task.Yield();
+                        return ActionResult.Failure;
+                    };
+
+                    await _circuitBreaker.ExecuteAsync(async () => await action());
+                }
+                catch (Exception e)
+                {
+                    _caughtExceptions.Add(e);
+                }
+            }).Wait();
         }
 
         [Then]

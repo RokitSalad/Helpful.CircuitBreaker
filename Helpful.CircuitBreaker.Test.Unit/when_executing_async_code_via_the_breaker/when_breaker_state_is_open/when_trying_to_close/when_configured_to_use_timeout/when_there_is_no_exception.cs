@@ -32,19 +32,22 @@ namespace when_executing_async_code_via_the_breaker.when_breaker_state_is_open.w
 
         protected override void When()
         {
-            try
+            Task.Run(async () =>
             {
-                Func<Task> wrapper = async () =>
+                try
                 {
-                    await Task.Yield();
-                };
+                    Func<Task> action = async () =>
+                    {
+                        await Task.Yield();
+                    };
 
-                _circuitBreaker.ExecuteAsync(wrapper).Wait();
-            }
-            catch (Exception e)
-            {
-                _caughtException = e;
-            }
+                    await _circuitBreaker.ExecuteAsync(async () => await action());
+                }
+                catch (Exception e)
+                {
+                    _caughtException = e;
+                }
+            }).Wait();
         }
 
         [Then]

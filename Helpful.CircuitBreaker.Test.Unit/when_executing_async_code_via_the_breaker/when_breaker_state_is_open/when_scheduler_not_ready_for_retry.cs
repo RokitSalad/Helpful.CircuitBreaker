@@ -25,25 +25,24 @@ namespace when_executing_async_code_via_the_breaker.when_breaker_state_is_open
 
         protected override void When()
         {
-            try
+            Task.Run(async () =>
             {
-                TriggerOpenBreaker();
-
-                Func<Task> action = async () =>
+                try
                 {
-                    await Task.Yield();
-                };
+                    TriggerOpenBreaker();
 
-                _circuitBreaker.ExecuteAsync(action).Wait();
-            }
-            catch (AggregateException ae)
-            {
-                _caughtException = ae.InnerException;
-            }
-            catch (CircuitBreakerOpenException e)
-            {
-                _caughtException = e;
-            }
+                    Func<Task> action = async () =>
+                    {
+                        await Task.Yield();
+                    };
+
+                    await _circuitBreaker.ExecuteAsync(async () => await action());
+                }
+                catch (Exception e)
+                {
+                    _caughtException = e;
+                }
+            }).Wait();
         }
 
         private void TriggerOpenBreaker()

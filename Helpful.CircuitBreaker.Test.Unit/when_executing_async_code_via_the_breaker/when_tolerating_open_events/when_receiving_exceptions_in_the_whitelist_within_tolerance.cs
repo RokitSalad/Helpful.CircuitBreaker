@@ -39,24 +39,23 @@ namespace when_executing_async_code_via_the_breaker.when_tolerating_open_events
 
         private void CallExecuteAsync()
         {
-            try
+            Task.Run(async () =>
             {
-                Func<Task> action = async () =>
+                try
                 {
-                    await Task.Yield();
-                    throw _thrownException;
-                };
+                    Func<Task> action = async () =>
+                    {
+                        await Task.Yield();
+                        throw _thrownException;
+                    };
 
-                _circuitBreaker.ExecuteAsync(action).Wait();
-            }
-            catch (AggregateException ae)
-            {
-                _caughtExceptions.Add(ae.InnerException);
-            }
-            catch (Exception e)
-            {
-                _caughtExceptions.Add(e);
-            }
+                    await _circuitBreaker.ExecuteAsync(action);
+                }
+                catch (Exception e)
+                {
+                    _caughtExceptions.Add(e);
+                }
+            }).Wait();
         }
 
         [Then]

@@ -28,18 +28,17 @@ namespace Helpful.CircuitBreaker.Test.Unit.when_executing_async_code_via_the_bre
 
         protected override void When()
         {
-            try
+            Task.Run(async () =>
             {
-                _circuitBreaker.ExecuteAsync(async () => await Task.Delay(10000)).Wait();
-            }
-            catch (AggregateException ae)
-            {
-                _caughtException = ae.InnerException;
-            }
-            catch (Exception e)
-            {
-                _caughtException = e;
-            }
+                try
+                {
+                    await _circuitBreaker.ExecuteAsync(async () => await Task.Delay(10000));
+                }
+                catch (Exception e)
+                {
+                    _caughtException = e;
+                }
+            }).Wait();
         }
 
         [Then]

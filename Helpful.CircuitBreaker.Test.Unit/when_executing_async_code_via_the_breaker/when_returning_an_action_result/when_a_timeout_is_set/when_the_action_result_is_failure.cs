@@ -29,24 +29,23 @@ namespace when_executing_async_code_via_the_breaker.when_returning_an_action_res
 
         protected override void When()
         {
-            try
+            Task.Run(async () =>
             {
-                Func<Task<ActionResult>> action = async () =>
+                try
                 {
-                    await Task.Yield();
-                    return ActionResult.Failure;
-                };
+                    Func<Task<ActionResult>> action = async () =>
+                    {
+                        await Task.Yield();
+                        return ActionResult.Failure;
+                    };
 
-                _circuitBreaker.ExecuteAsync(action).Wait();
-            }
-            catch (AggregateException ae)
-            {
-                _caughtException = ae.InnerException;
-            }
-            catch (Exception e)
-            {
-                _caughtException = e;
-            }
+                    await _circuitBreaker.ExecuteAsync(async () => await action());
+                }
+                catch (Exception e)
+                {
+                    _caughtException = e;
+                }
+            }).Wait();
         }
 
         [Then]
