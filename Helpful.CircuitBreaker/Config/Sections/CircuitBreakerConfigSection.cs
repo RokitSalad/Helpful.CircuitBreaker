@@ -71,7 +71,7 @@ namespace Helpful.CircuitBreaker.Config.Sections
         public bool UseImmediateFailureRetry
         {
             get { return (bool)base["ImmediateRetryOnFailure"]; }
-            set { base["UseTimeout"] = value; }
+            set { base["ImmediateRetryOnFailure"] = value; }
         }
     }
 }
